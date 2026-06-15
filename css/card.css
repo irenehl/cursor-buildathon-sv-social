@@ -338,8 +338,13 @@
 .social-card[data-format="x"] {
   --pad-x: 64px;
   --pad-y: 64px;
+  --top-pad: 16px;
+  --top-gap: 12px;
+  --host-mark-h: 26px;
+  --brand-size: 15px;
   --landmark-h: 100%;
   --meta-size: 15px;
+  --foot-top: 18px;
   --foot-pad: 16px;
   --foot-gap: 12px;
   --foot-size: 13px;
@@ -440,7 +445,6 @@
 .social-card[data-format="linkedin"] .social-card__foot,
 .social-card[data-format="x"] .social-card__foot {
   width: 100%;
-  margin-top: 0;
 }
 
 /* ── Banner 1.91:1 (1200×627) — horizontal link preview only ── */
