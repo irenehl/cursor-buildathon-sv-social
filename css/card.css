@@ -1,0 +1,444 @@
+/* Sponsor thank-you cards — Cursor Buildathon El Salvador.
+   Purpose: thank a sponsor of the 24h hackathon. Hierarchy: SPONSOR LOGO first,
+   El Salvador anchored by the halftone Divino Salvador del Mundo landmark. */
+
+.social-card {
+  position: relative;
+  width: var(--frame-w);
+  height: var(--frame-h);
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-display);
+  isolation: isolate;
+}
+
+/* ── Atmosphere ── */
+.social-card__atmos {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.social-card__atmos-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(245, 240, 232, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 240, 232, 0.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 88% 60% at 50% 30%, #000 8%, transparent 78%);
+}
+
+.social-card__atmos-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 70% 38% at 50% 30%, rgba(255, 75, 0, 0.16) 0%, transparent 70%);
+}
+
+/* ── Landmark (El Salvador identity) ── */
+.social-card__landmark {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--landmark-h);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.social-card__landmark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  opacity: 0.95;
+}
+
+/* Per-landmark framing */
+.social-card[data-landmark="volcano"] .social-card__landmark img {
+  object-position: center 30%;
+  opacity: 1;
+}
+.social-card[data-landmark="monument"] .social-card__landmark img {
+  object-position: center 18%;
+}
+
+.social-card__landmark-fade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, var(--bg) 0%, rgba(8, 8, 8, 0.55) 22%, transparent 50%, rgba(8, 8, 8, 0.35) 88%, var(--bg) 100%);
+}
+
+/* ── Layout shell ── */
+.social-card__inner {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--pad-top, var(--pad-y)) var(--pad-x) var(--pad-bottom, var(--pad-y));
+}
+
+/* ── Top bar ── */
+.social-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  padding-bottom: var(--top-pad);
+  border-bottom: 1px solid rgba(245, 240, 232, 0.16);
+}
+
+.social-card__top-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--top-gap);
+}
+
+.social-card__host-mark {
+  height: var(--host-mark-h);
+  width: auto;
+  opacity: 0.92;
+}
+
+.social-card__brand {
+  font-family: var(--font-mono);
+  font-size: var(--brand-size);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.72);
+}
+
+.social-card__top-place {
+  font-family: var(--font-mono);
+  font-size: var(--brand-size);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* ── Main ── */
+.social-card__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0;
+  padding-top: var(--main-top);
+}
+
+.social-card__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  font-family: var(--font-mono);
+  font-size: var(--eyebrow-size);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.social-card__eyebrow-mark {
+  width: var(--eyebrow-mark);
+  height: 2px;
+  background: var(--accent);
+}
+
+.social-card__role {
+  margin-top: var(--role-gap);
+  align-self: flex-start;
+  padding: var(--role-pad);
+  font-family: var(--font-mono);
+  font-size: var(--role-size);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg);
+  border: 1px solid rgba(255, 75, 0, 0.5);
+  border-radius: 999px;
+  background: rgba(255, 75, 0, 0.08);
+}
+
+/* ── Logo hero (floating, no card) ── */
+.social-card__stage {
+  position: relative;
+  width: 100%;
+  height: var(--stage-h);
+  margin-top: var(--stage-gap);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--stage-pad);
+  background: radial-gradient(ellipse 58% 50% at 50% 50%, rgba(255, 75, 0, 0.12) 0%, transparent 68%);
+}
+
+.social-card__logo {
+  display: block;
+  width: var(--logo-max-w);
+  height: var(--logo-max-h);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: drop-shadow(0 12px 40px rgba(0, 0, 0, 0.7));
+}
+
+.social-card__name {
+  margin-top: var(--name-gap);
+  font-size: var(--name-size);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+}
+
+.social-card__context {
+  margin-top: var(--context-gap);
+  max-width: var(--context-max);
+  font-family: var(--font-mono);
+  font-size: var(--context-size);
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: rgba(245, 240, 232, 0.66);
+}
+
+/* ── Meta footer ── */
+.social-card__meta {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin-top: var(--meta-top);
+  font-family: var(--font-mono);
+  font-size: var(--meta-size);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.82);
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.9);
+}
+
+.social-card__meta-sep { color: rgba(245, 240, 232, 0.4); }
+.social-card__meta-hot { color: var(--accent); }
+
+/* ── Footer chrome (powered by Ai /abs) ── */
+.social-card__foot {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--foot-gap);
+  margin-top: var(--foot-top);
+  padding-top: var(--foot-pad);
+  border-top: 1px solid rgba(245, 240, 232, 0.16);
+}
+
+.social-card__foot-label {
+  font-family: var(--font-mono);
+  font-size: var(--foot-size);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.5);
+}
+
+.social-card__foot-logo {
+  width: var(--foot-logo-w);
+  height: var(--foot-logo-h);
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.92;
+}
+
+/* ── Story 1080×1920 ──
+   Instagram overlays cover the top (~180px: username/close) and the bottom
+   (~290px: caption + send bar). Content lives inside that safe band. */
+.social-card[data-format="story"] {
+  --pad-x: 64px;
+  --pad-top: 260px;
+  --pad-bottom: 350px;
+  --top-pad: 22px;
+  --top-gap: 16px;
+  --host-mark-h: 34px;
+  --brand-size: 20px;
+  --main-top: 30px;
+  --eyebrow-size: 22px;
+  --eyebrow-mark: 30px;
+  --role-gap: 26px;
+  --role-size: 18px;
+  --role-pad: 12px 22px;
+  --stage-gap: 30px;
+  --stage-h: 600px;
+  --stage-pad: 16px;
+  --logo-max-w: 82%;
+  --logo-max-h: 70%;
+  --name-gap: 34px;
+  --name-size: 60px;
+  --context-gap: 18px;
+  --context-size: 22px;
+  --context-max: 26ch;
+  --meta-top: 30px;
+  --meta-size: 21px;
+  --landmark-h: 620px;
+  --foot-top: 28px;
+  --foot-pad: 22px;
+  --foot-gap: 16px;
+  --foot-size: 18px;
+  --foot-logo-w: 132px;
+  --foot-logo-h: 30px;
+}
+
+/* ── Post 1080×1080 ── */
+.social-card[data-format="post"] {
+  --pad-x: 56px;
+  --pad-y: 48px;
+  --top-pad: 16px;
+  --top-gap: 12px;
+  --host-mark-h: 26px;
+  --brand-size: 15px;
+  --main-top: 30px;
+  --eyebrow-size: 16px;
+  --eyebrow-mark: 24px;
+  --role-gap: 16px;
+  --role-size: 13px;
+  --role-pad: 8px 16px;
+  --stage-gap: 20px;
+  --stage-h: 540px;
+  --stage-pad: 10px;
+  --logo-max-w: 80%;
+  --logo-max-h: 72%;
+  --name-gap: 20px;
+  --name-size: 40px;
+  --context-gap: 12px;
+  --context-size: 16px;
+  --context-max: 30ch;
+  --meta-top: 20px;
+  --meta-size: 15px;
+  --landmark-h: 360px;
+  --foot-top: 18px;
+  --foot-pad: 14px;
+  --foot-gap: 12px;
+  --foot-size: 13px;
+  --foot-logo-w: 96px;
+  --foot-logo-h: 22px;
+}
+
+.social-card[data-format="post"][data-landmark="monument"] .social-card__landmark img {
+  object-position: center 8%;
+}
+
+/* ── LinkedIn 1200×627 ── */
+.social-card[data-format="linkedin"] {
+  --pad-x: 56px;
+  --pad-y: 44px;
+  --top-pad: 14px;
+  --top-gap: 12px;
+  --host-mark-h: 22px;
+  --brand-size: 13px;
+  --eyebrow-size: 13px;
+  --eyebrow-mark: 22px;
+  --role-gap: 14px;
+  --role-size: 12px;
+  --role-pad: 7px 14px;
+  --stage-h: 460px;
+  --stage-pad: 10px;
+  --logo-max-w: 84%;
+  --logo-max-h: 76%;
+  --name-gap: 16px;
+  --name-size: 38px;
+  --context-gap: 12px;
+  --context-size: 14px;
+  --context-max: 34ch;
+  --meta-size: 13px;
+  --landmark-h: 627px;
+  --foot-top: 0px;
+  --foot-pad: 14px;
+  --foot-gap: 12px;
+  --foot-size: 12px;
+  --foot-logo-w: 90px;
+  --foot-logo-h: 20px;
+}
+
+.social-card[data-format="linkedin"] .social-card__landmark {
+  left: auto;
+  right: 0;
+  width: 46%;
+  height: 100%;
+}
+
+/* Integrate the volcano into the scene: screen blend drops the black PNG base
+   so only the white/orange dots remain, melting into the orange grid.
+   A soft mask feathers every edge so there is no block seam. */
+.social-card[data-format="linkedin"] .social-card__landmark img {
+  opacity: 0.9;
+  mix-blend-mode: screen;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, #000 46%),
+    linear-gradient(180deg, transparent 4%, #000 24%, #000 82%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, #000 46%),
+    linear-gradient(180deg, transparent 4%, #000 24%, #000 82%, transparent 100%);
+  mask-composite: intersect;
+}
+.social-card[data-format="linkedin"][data-landmark="monument"] .social-card__landmark img {
+  object-position: center 10%;
+}
+.social-card[data-format="linkedin"][data-landmark="volcano"] .social-card__landmark img {
+  object-position: center 46%;
+}
+
+/* No dark overlay for LinkedIn — the screen blend + mask handle the blend. */
+.social-card[data-format="linkedin"] .social-card__landmark-fade {
+  display: none;
+}
+
+.social-card__body--linkedin {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  min-height: 0;
+  padding-top: 18px;
+  padding-right: 26%;
+}
+
+.social-card__col-text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.social-card[data-format="linkedin"] .social-card__name {
+  margin-top: 18px;
+}
+
+.social-card[data-format="linkedin"] .social-card__meta {
+  margin-top: 18px;
+}
+
+.social-card__col-logo .social-card__stage {
+  margin-top: 0;
+}
+
+/* Wide wordmarks: give them the full width box; contain keeps height in check. */
+.social-card[data-sponsor="n8n"] .social-card__logo,
+.social-card[data-sponsor="codex"] .social-card__logo,
+.social-card[data-sponsor="netlify"] .social-card__logo,
+.social-card[data-sponsor="wispr"] .social-card__logo,
+.social-card[data-sponsor="exa"] .social-card__logo,
+.social-card[data-sponsor="fal"] .social-card__logo,
+.social-card[data-sponsor="elevenlabs"] .social-card__logo,
+.social-card[data-sponsor="searchyou"] .social-card__logo,
+.social-card[data-sponsor="dma"] .social-card__logo {
+  width: 82%;
+  height: 56%;
+}

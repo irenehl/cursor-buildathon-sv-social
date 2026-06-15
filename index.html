@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cursor Buildathon SV · Sponsor Social Cards</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/app.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app__header">
+        <h1 class="app__title">Sponsor social cards</h1>
+        <p class="app__desc">
+          Sponsor-first graphics with a volcanic coast / añil night direction:
+          massive partner mark, site colors, and Salvadoran atmosphere without literal flag art.
+        </p>
+      </header>
+
+      <div class="controls">
+        <div class="control">
+          <label for="sponsor">Sponsor</label>
+          <select id="sponsor"></select>
+        </div>
+        <div class="control">
+          <label for="lang">Language</label>
+          <select id="lang">
+            <option value="en">English</option>
+            <option value="es">Español</option>
+          </select>
+        </div>
+        <div class="control">
+          <label for="landmark">El Salvador backdrop</label>
+          <select id="landmark">
+            <option value="volcano">Volcán Santa Ana</option>
+            <option value="monument">Divino Salvador del Mundo</option>
+          </select>
+        </div>
+        <div class="control" style="grid-column: 1 / -1">
+          <label for="headline">Tagline (optional override)</label>
+          <input
+            id="headline"
+            type="text"
+            placeholder="Powering the builders gathering in San Salvador."
+          />
+        </div>
+      </div>
+
+      <div class="format-tabs" role="tablist" aria-label="Export format">
+        <button
+          type="button"
+          class="format-tab is-active"
+          data-format="story"
+          role="tab"
+          aria-selected="true"
+        >
+          Instagram Story
+        </button>
+        <button type="button" class="format-tab" data-format="post" role="tab">
+          Instagram Post
+        </button>
+        <button type="button" class="format-tab" data-format="linkedin" role="tab">
+          LinkedIn
+        </button>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn--primary" id="export-one">
+          Download PNG
+        </button>
+        <button type="button" class="btn btn--secondary" id="export-all">
+          Download all sponsors — ZIP (this format)
+        </button>
+        <a class="btn btn--secondary" id="preview-anim" href="#" target="_blank" rel="noopener">
+          Preview animated story
+        </a>
+      </div>
+
+      <section class="batch-export" aria-labelledby="batch-export-title">
+        <h2 class="batch-export__title" id="batch-export-title">Download by folder (one ZIP)</h2>
+        <p class="batch-export__desc">
+          One download — unzip to get <code>linkedin/</code>,
+          <code>instagram-post/</code>, or <code>instagram-story/</code> with every
+          sponsor plus <code>en/</code> and <code>es/</code> subfolders. For a real
+          folder on disk without unzipping, run
+          <code>node scripts/export-pngs.mjs</code> (see README).
+        </p>
+        <div class="batch-export__actions">
+          <button type="button" class="btn btn--secondary" data-zip-formats="linkedin">
+            LinkedIn
+          </button>
+          <button type="button" class="btn btn--secondary" data-zip-formats="post">
+            Instagram Post
+          </button>
+          <button type="button" class="btn btn--secondary" data-zip-formats="story">
+            Instagram Story
+          </button>
+          <button type="button" class="btn btn--primary" data-zip-formats="story,post,linkedin">
+            Everything
+          </button>
+        </div>
+      </section>
+
+      <p class="status" id="status" aria-live="polite"></p>
+
+      <div class="preview-wrap">
+        <span class="preview-label" id="preview-label">Instagram Story · 1080×1920</span>
+        <div class="preview-stage" id="preview-stage">
+          <div class="preview-scaler" id="preview-scaler"></div>
+        </div>
+      </div>
+
+      <aside class="hint">
+        <strong>Quick start</strong> — from this folder run
+        <code>python3 -m http.server 8787</code> then open
+        <code>http://localhost:8787</code>. Logos are linked from the main repo
+        (<code>logos/</code> → <code>cursor-buildathon-sv/public/sponsors</code>).
+        Edit copy in <code>js/sponsors.js</code>.
+      </aside>
+    </div>
+
+    <div class="export-root" id="export-root" aria-hidden="true"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

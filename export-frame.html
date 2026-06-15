@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/app.css" />
+    <style>
+      body {
+        margin: 0;
+        background: #080808;
+      }
+      #export-root {
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="export-root"></div>
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/dist/html-to-image.js"></script>
+    <script type="module">
+      import { SPONSORS, FORMATS } from "./js/sponsors.js";
+      import { buildCardHtml } from "./js/render.js";
+
+      const params = new URLSearchParams(location.search);
+      const sponsorId = params.get("sponsor") ?? SPONSORS[0].id;
+      const format = params.get("format") ?? "story";
+      const lang = params.get("lang") === "es" ? "es" : "en";
+      const landmark = params.get("landmark") ?? "volcano";
+      const headline = params.get("headline") ?? "";
+
+      const sponsor = SPONSORS.find((s) => s.id === sponsorId) ?? SPONSORS[0];
+      const root = document.getElementById("export-root");
+
+      async function waitForImages(container) {
+        const imgs = [...container.querySelectorAll("img")];
+        await Promise.all(
+          imgs.map(
+            (img) =>
+              new Promise((resolve, reject) => {
+                if (img.complete && img.naturalWidth) {
+                  resolve();
+                  return;
+                }
+                img.onload = () => resolve();
+                img.onerror = () => reject(new Error(`Failed to load ${img.src}`));
+              }),
+          ),
+        );
+      }
+
+      root.innerHTML = buildCardHtml({
+        sponsor,
+        format,
+        lang,
+        headlineOverride: headline,
+        landmark,
+      });
+
+      await document.fonts.ready;
+      await waitForImages(root);
+
+      window.__exportPng = async () => {
+        const card = root.querySelector(".social-card");
+        const { w, h } = FORMATS[format];
+        const blob = await htmlToImage.toBlob(card, {
+          width: w,
+          height: h,
+          pixelRatio: 2,
+          cacheBust: true,
+          backgroundColor: "#080808",
+        });
+        if (!blob) throw new Error("PNG export failed");
+        const buf = await blob.arrayBuffer();
+        const bytes = new Uint8Array(buf);
+        let binary = "";
+        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return btoa(binary);
+      };
+
+      window.__ready = true;
+    </script>
+  </body>
+</html>

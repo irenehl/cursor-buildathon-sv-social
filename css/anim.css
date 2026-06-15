@@ -1,0 +1,147 @@
+/* Animated Instagram Story — layered reveal + subtle ambient motion.
+   Deterministic: all motion is CSS animations keyed to a shared clock,
+   so the recorder can seek each frame via the Web Animations API. */
+
+@keyframes sc-fade-up {
+  from { opacity: 0; transform: translateY(26px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sc-logo-reveal {
+  0%   { opacity: 0; transform: scale(0.92); filter: blur(6px); }
+  60%  { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: scale(1); filter: blur(0); }
+}
+
+@keyframes sc-logo-float {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-14px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes sc-glow-pulse {
+  0%   { opacity: 0.6; transform: scale(1); }
+  50%  { opacity: 1;   transform: scale(1.06); }
+  100% { opacity: 0.6; transform: scale(1); }
+}
+
+@keyframes sc-grid-drift {
+  from { transform: translateY(0); }
+  to   { transform: translateY(56px); }
+}
+
+/* Full-story light sweep — one soft, continuous diagonal pass per loop.
+   Only two transform stops (start/end) => constant motion, never lingers mid-frame. */
+@keyframes sc-sweep-full {
+  0%   { transform: translateX(-160%) skewX(-12deg); opacity: 0; }
+  18%  { opacity: 0.5; }
+  82%  { opacity: 0.5; }
+  100% { transform: translateX(160%) skewX(-12deg); opacity: 0; }
+}
+
+@keyframes sc-landmark-rise {
+  from { opacity: 0; transform: translateY(40px) scale(1.04); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes sc-landmark-breathe {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.035); }
+  100% { transform: scale(1); }
+}
+
+@keyframes sc-mark-blink {
+  0%, 100% { transform: scaleX(1); opacity: 1; }
+  50%      { transform: scaleX(0.4); opacity: 0.6; }
+}
+
+/* ── Apply only in animated mode ── */
+.social-card.is-animated {
+  --sc-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Ambient layers */
+.social-card.is-animated .social-card__atmos-glow {
+  animation: sc-glow-pulse 4s ease-in-out infinite;
+  transform-origin: 50% 30%;
+}
+
+.social-card.is-animated .social-card__atmos-grid {
+  animation: sc-grid-drift 14s linear infinite;
+}
+
+/* Landmark */
+.social-card.is-animated .social-card__landmark {
+  opacity: 0;
+  animation: sc-landmark-rise 1.4s var(--sc-ease) 0.7s forwards;
+}
+.social-card.is-animated .social-card__landmark img {
+  animation: sc-landmark-breathe 11s ease-in-out 2s infinite;
+  transform-origin: 50% 80%;
+}
+
+/* Staggered reveals */
+.social-card.is-animated .social-card__top {
+  opacity: 0;
+  animation: sc-fade-up 0.7s var(--sc-ease) 0.1s forwards;
+}
+.social-card.is-animated .social-card__eyebrow {
+  opacity: 0;
+  animation: sc-fade-up 0.7s var(--sc-ease) 0.35s forwards;
+}
+.social-card.is-animated .social-card__role {
+  opacity: 0;
+  animation: sc-fade-up 0.7s var(--sc-ease) 0.5s forwards;
+}
+.social-card.is-animated .social-card__name {
+  opacity: 0;
+  animation: sc-fade-up 0.7s var(--sc-ease) 1.05s forwards;
+}
+.social-card.is-animated .social-card__context {
+  opacity: 0;
+  animation: sc-fade-up 0.7s var(--sc-ease) 1.2s forwards;
+}
+.social-card.is-animated .social-card__meta {
+  opacity: 0;
+  animation: sc-fade-up 0.7s var(--sc-ease) 1.35s forwards;
+}
+.social-card.is-animated .social-card__foot {
+  opacity: 0;
+  animation: sc-fade-up 0.7s var(--sc-ease) 1.5s forwards;
+}
+.social-card.is-animated .social-card__eyebrow-mark {
+  animation: sc-mark-blink 2.6s ease-in-out 1.8s infinite;
+  transform-origin: left center;
+}
+
+/* Logo: reveal on the stage, gentle float on the mark */
+.social-card.is-animated .social-card__stage {
+  opacity: 0;
+  animation: sc-logo-reveal 0.9s var(--sc-ease) 0.65s forwards;
+  overflow: visible;
+}
+.social-card.is-animated .social-card__logo {
+  animation: sc-logo-float 5s ease-in-out 1.5s infinite;
+}
+
+/* Light sweep across the ENTIRE story (above all content) — soft, blurred, continuous */
+.social-card.is-animated::after {
+  content: "";
+  position: absolute;
+  top: -12%;
+  bottom: -12%;
+  left: -10%;
+  right: -10%;
+  z-index: 6;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.05) 47%,
+    rgba(255, 150, 80, 0.09) 52%,
+    transparent 70%
+  );
+  filter: blur(48px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: sc-sweep-full 6s linear infinite;
+}

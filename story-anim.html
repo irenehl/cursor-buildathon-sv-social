@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Story animation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/card.css" />
+    <link rel="stylesheet" href="css/anim.css" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { background: #000; display: grid; place-items: center; min-height: 100vh; }
+      /* Fit-to-screen preview; the recorder ignores this and captures native 1080x1920. */
+      #wrap { width: 1080px; height: 1920px; transform-origin: center; }
+      @media (max-aspect-ratio: 1080/1920) {
+        #wrap { transform: scale(calc(100vw / 1080)); }
+      }
+      @media (min-aspect-ratio: 1080/1920) {
+        #wrap { transform: scale(calc(100vh / 1920)); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrap"></div>
+    <script type="module">
+      import { buildCardHtml } from "./js/render.js";
+      import { SPONSORS } from "./js/sponsors.js";
+
+      const p = new URLSearchParams(location.search);
+      const id = p.get("sponsor") || "n8n";
+      const lang = p.get("lang") || "es";
+      const landmark = p.get("landmark") || "volcano";
+      const sponsor = SPONSORS.find((s) => s.id === id) || SPONSORS[0];
+
+      const wrap = document.getElementById("wrap");
+      wrap.innerHTML = buildCardHtml({ sponsor, format: "story", lang, landmark });
+      const card = wrap.querySelector(".social-card");
+      card.classList.add("is-animated");
+
+      // Loop length in ms; keep in sync with the recorder default.
+      const LOOP = Number(p.get("loop") || 6000);
+
+      function restartAnimations() {
+        card.getAnimations({ subtree: true }).forEach((a) => {
+          a.cancel();
+          a.play();
+        });
+      }
+
+      Promise.all([
+        document.fonts.ready,
+        ...[...wrap.querySelectorAll("img")].map((img) =>
+          img.complete ? Promise.resolve() : new Promise((r) => { img.onload = img.onerror = r; })
+        ),
+      ]).then(() => {
+        // For the on-screen preview, loop the whole sequence.
+        if (!p.has("record")) {
+          setInterval(restartAnimations, LOOP);
+        }
+        window.__ready = true;
+      });
+
+      /** Seek every animation (incl. pseudo-elements) to an absolute time, paused.
+       *  Used by the recorder for deterministic, smooth frames. */
+      window.__seek = (ms) => {
+        const anims = document.getAnimations();
+        for (const a of anims) {
+          try {
+            a.pause();
+            a.currentTime = ms;
+          } catch (e) { /* ignore */ }
+        }
+      };
+    </script>
+  </body>
+</html>

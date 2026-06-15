@@ -1,0 +1,23 @@
+:root {
+  /* Cursor Buildathon SV — matches landing page */
+  --bg: #080808;
+  --bg-alt: #0a0a0a;
+  --fg: #f5f0e8;
+  --fg-2: #a0a0a0;
+  --fg-3: #787878;
+  --border: #1e1e1e;
+  --accent: #ff4b00;
+  --accent-2: #00ffcc;
+  --accent-glow: rgba(255, 75, 0, 0.18);
+  --accent-2-glow: rgba(0, 255, 204, 0.12);
+
+  /* El Salvador — añil night + Pacific/volcanic accents */
+  --sv-blue: #0047ab;
+  --sv-blue-deep: #001a45;
+  --sv-blue-light: #5eb3ff;
+  --sv-sky-light: #a8d4ff;
+  --sv-white: #ffffff;
+
+  --font-display: "Chakra Petch", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
