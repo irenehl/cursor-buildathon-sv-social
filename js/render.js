@@ -101,7 +101,17 @@ function buildBannerInner({ copy, sponsorLabel, context, logoSrc, meta, footer }
 
 /** 1:1 feed publication — sentence headline, sponsor logo sign-off (LinkedIn / X). */
 function buildPublicationInner({ copy, sponsorLabel, logoSrc, meta, footer }) {
+  const topBar = `
+    <header class="social-card__top">
+      <div class="social-card__top-brand">
+        <img class="social-card__host-mark" src="${HOST_LOGO}" alt="Cursor" crossorigin="anonymous" />
+        <span class="social-card__brand">Buildathon · 2026</span>
+      </div>
+      <span class="social-card__top-place">El Salvador</span>
+    </header>`;
+
   return `
+    ${topBar}
     <main class="social-card__pub">
       <span class="social-card__pub-badge">${escapeHtml(copy.pubBadge)}</span>
       <h1 class="social-card__pub-statement">
@@ -116,8 +126,8 @@ function buildPublicationInner({ copy, sponsorLabel, logoSrc, meta, footer }) {
         style="background-image: url('${logoSrc}')"
       ></div>
       ${meta}
-      ${footer}
-    </main>`;
+    </main>
+    ${footer}`;
 }
 
 function buildFeedInner({ copy, sponsorLabel, context, logoSrc, meta, footer }) {
