@@ -22,6 +22,8 @@ const LANGS = ["en", "es"];
 
 const FORMAT_FOLDERS = {
   linkedin: "linkedin",
+  x: "x",
+  banner: "banner",
   post: "instagram-post",
   story: "instagram-story",
 };

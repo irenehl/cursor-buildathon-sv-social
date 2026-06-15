@@ -6,13 +6,13 @@
  * Usage:
  *   python3 -m http.server 8787   # in another terminal
  *   node scripts/export-pngs.mjs
- *   node scripts/export-pngs.mjs --format linkedin
+ *   node scripts/export-pngs.mjs --format banner
  *   node scripts/export-pngs.mjs --out ./exports/my-pack
  *
  * Output layout:
  *   out/social-pngs/
- *     linkedin/
- *       buildathon-sv-codex-linkedin-en.png
+ *     banner/
+ *       buildathon-sv-codex-banner-en.png
  *       en/
  *       es/
  *     instagram-post/
@@ -35,12 +35,16 @@ const CHROME =
 
 const FORMAT_FOLDERS = {
   linkedin: "linkedin",
+  x: "x",
+  banner: "banner",
   post: "instagram-post",
   story: "instagram-story",
 };
 
 const FORMATS = {
-  linkedin: { w: 1200, h: 627 },
+  linkedin: { w: 1080, h: 1080 },
+  x: { w: 1080, h: 1080 },
+  banner: { w: 1200, h: 627 },
   post: { w: 1080, h: 1080 },
   story: { w: 1080, h: 1920 },
 };

@@ -6,11 +6,13 @@ Sponsor-first social graphics for Cursor Buildathon SV: dark site palette, massi
 
 ## Formats
 
-| Format | Size | Use |
-|--------|------|-----|
-| Instagram Story | 1080 × 1920 | Stories / Reels cover |
-| Instagram Post | 1080 × 1080 | Feed square |
-| LinkedIn | 1200 × 627 | LinkedIn post / share image |
+| Format | Size | Ratio | Use |
+|--------|------|-------|-----|
+| Instagram Story | 1080 × 1920 | 9:16 | Stories / Reels cover |
+| Instagram Post | 1080 × 1080 | 1:1 | Feed square (logo hero) |
+| LinkedIn | 1080 × 1080 | 1:1 | Feed publication (typographic) |
+| X | 1080 × 1080 | 1:1 | Feed publication (typographic) |
+| Banner | 1200 × 627 | 1.91:1 | Horizontal link preview only |
 
 ## Quick start
 
@@ -24,7 +26,7 @@ Open **http://localhost:8787**
 1. Choose sponsor + language
 2. Pick format tab
 3. **Download PNG** (one card) or **Download all sponsors — ZIP** (current format tab)
-4. Or use **Download by folder** for LinkedIn / Instagram Post / Story / Everything — each is **one ZIP file**
+4. Or use **Download by folder** for LinkedIn / X / Banner / Instagram Post / Story / Everything — each is **one ZIP file**
 
 ### Folder on disk (no unzip)
 
@@ -39,14 +41,13 @@ Writes everything to `out/social-pngs/`:
 ```
 out/social-pngs/
   linkedin/
-    buildathon-sv-codex-linkedin-en.png
-    en/
-    es/
+  x/
+  banner/
   instagram-post/
   instagram-story/
 ```
 
-Flags: `--format linkedin|post|story|all`, `--lang en|es|all`, `--landmark`, `--out`.
+Flags: `--format linkedin|x|banner|post|story|all`, `--lang en|es|all`, `--landmark`, `--out`.
 
 ### Folder ZIP structure (browser)
 
@@ -55,18 +56,19 @@ Each pack downloads a single ZIP. Inside:
 ```
 linkedin/
   buildathon-sv-codex-linkedin-en.png   ← all sponsors (EN + ES)
-  buildathon-sv-codex-linkedin-es.png
   en/
-    buildathon-sv-codex-linkedin-en.png
   es/
-    buildathon-sv-codex-linkedin-es.png
+x/
+  …
+banner/
+  …
 instagram-post/
   …
 instagram-story/
   …
 ```
 
-Use **Everything** for one ZIP with all three format folders.
+Use **Everything** for one ZIP with all format folders.
 
 > A local server is required so logos load correctly for PNG export.
 

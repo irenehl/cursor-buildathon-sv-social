@@ -7,7 +7,7 @@ const AILABS_LOGO = "logos/ailabs.svg";
 /**
  * @param {object} opts
  * @param {import('./sponsors.js').SPONSORS[number]} opts.sponsor
- * @param {'story'|'post'|'linkedin'} opts.format
+ * @param {'story'|'post'|'linkedin'|'x'|'banner'} opts.format
  * @param {'en'|'es'} opts.lang
  * @param {string} [opts.headlineOverride]
  * @param {'volcano'|'monument'} [opts.landmark]
@@ -19,30 +19,6 @@ export function buildCardHtml({ sponsor, format, lang, headlineOverride, landmar
   const logoSrc = `logos/${sponsor.logo}`;
   const sponsorLabel = sponsorDisplayName(sponsor);
   const land = LANDMARKS[landmark] || LANDMARKS[DEFAULT_LANDMARK];
-
-  const topBar = `
-    <header class="social-card__top">
-      <div class="social-card__top-brand">
-        <img class="social-card__host-mark" src="${HOST_LOGO}" alt="Cursor" crossorigin="anonymous" />
-        <span class="social-card__brand">Buildathon · 2026</span>
-      </div>
-      <span class="social-card__top-place">El Salvador</span>
-    </header>`;
-
-  const thanksLine = `
-    <p class="social-card__eyebrow">
-      <span class="social-card__eyebrow-mark"></span>${escapeHtml(copy.thanks)}
-    </p>`;
-
-  const role = `<p class="social-card__role">${escapeHtml(copy.role)}</p>`;
-
-  const stage = `
-    <div class="social-card__stage">
-      <div class="social-card__logo" role="img" aria-label="${escapeHtml(sponsor.name)}" style="background-image: url('${logoSrc}')"></div>
-    </div>`;
-
-  const name = `<p class="social-card__name">${escapeHtml(sponsorLabel)}</p>`;
-  const contextLine = `<p class="social-card__context">${escapeHtml(context)}</p>`;
 
   const meta = `
     <div class="social-card__meta">
@@ -61,34 +37,12 @@ export function buildCardHtml({ sponsor, format, lang, headlineOverride, landmar
 
   let inner = "";
 
-  if (format === "linkedin") {
-    inner = `
-      ${topBar}
-      <div class="social-card__body social-card__body--linkedin">
-        <div class="social-card__col-text">
-          ${thanksLine}
-          ${role}
-          ${name}
-          ${contextLine}
-          ${meta}
-        </div>
-        <div class="social-card__col-logo">
-          ${stage}
-        </div>
-      </div>
-      ${footer}`;
+  if (format === "banner") {
+    inner = buildBannerInner({ copy, sponsorLabel, context, logoSrc, meta, footer });
+  } else if (format === "linkedin" || format === "x") {
+    inner = buildPublicationInner({ copy, sponsorLabel, logoSrc, meta, footer });
   } else {
-    inner = `
-      ${topBar}
-      <main class="social-card__main">
-        ${thanksLine}
-        ${role}
-        ${stage}
-        ${name}
-        ${contextLine}
-        ${meta}
-      </main>
-      ${footer}`;
+    inner = buildFeedInner({ copy, sponsorLabel, context, logoSrc, meta, footer });
   }
 
   return `
@@ -106,6 +60,97 @@ export function buildCardHtml({ sponsor, format, lang, headlineOverride, landmar
     ${inner}
   </div>
 </article>`;
+}
+
+function buildBannerInner({ copy, sponsorLabel, context, logoSrc, meta, footer }) {
+  const topBar = `
+    <header class="social-card__top">
+      <div class="social-card__top-brand">
+        <img class="social-card__host-mark" src="${HOST_LOGO}" alt="Cursor" crossorigin="anonymous" />
+        <span class="social-card__brand">Buildathon · 2026</span>
+      </div>
+      <span class="social-card__top-place">El Salvador</span>
+    </header>`;
+
+  const thanksLine = `
+    <p class="social-card__eyebrow">
+      <span class="social-card__eyebrow-mark"></span>${escapeHtml(copy.thanks)}
+    </p>`;
+
+  const stage = `
+    <div class="social-card__stage">
+      <div class="social-card__logo" role="img" aria-label="${escapeHtml(sponsorLabel)}" style="background-image: url('${logoSrc}')"></div>
+    </div>`;
+
+  return `
+    ${topBar}
+    <div class="social-card__body social-card__body--banner">
+      <div class="social-card__col-text">
+        ${thanksLine}
+        <p class="social-card__role">${escapeHtml(copy.role)}</p>
+        <p class="social-card__name">${escapeHtml(sponsorLabel)}</p>
+        <p class="social-card__context">${escapeHtml(context)}</p>
+        ${meta}
+      </div>
+      <div class="social-card__col-logo">
+        ${stage}
+      </div>
+    </div>
+    ${footer}`;
+}
+
+/** 1:1 feed publication — sentence headline, sponsor logo sign-off (LinkedIn / X). */
+function buildPublicationInner({ copy, sponsorLabel, logoSrc, meta, footer }) {
+  return `
+    <main class="social-card__pub">
+      <span class="social-card__pub-badge">${escapeHtml(copy.pubBadge)}</span>
+      <h1 class="social-card__pub-statement">
+        <span class="social-card__pub-statement-brand">${escapeHtml(sponsorLabel)}</span> ${escapeHtml(copy.pubStatement)}
+      </h1>
+      <p class="social-card__pub-context">${escapeHtml(copy.pubContext)}</p>
+      <div class="social-card__pub-grow" aria-hidden="true"></div>
+      <div
+        class="social-card__pub-logo"
+        role="img"
+        aria-label="${escapeHtml(sponsorLabel)}"
+        style="background-image: url('${logoSrc}')"
+      ></div>
+      ${meta}
+      ${footer}
+    </main>`;
+}
+
+function buildFeedInner({ copy, sponsorLabel, context, logoSrc, meta, footer }) {
+  const topBar = `
+    <header class="social-card__top">
+      <div class="social-card__top-brand">
+        <img class="social-card__host-mark" src="${HOST_LOGO}" alt="Cursor" crossorigin="anonymous" />
+        <span class="social-card__brand">Buildathon · 2026</span>
+      </div>
+      <span class="social-card__top-place">El Salvador</span>
+    </header>`;
+
+  const thanksLine = `
+    <p class="social-card__eyebrow">
+      <span class="social-card__eyebrow-mark"></span>${escapeHtml(copy.thanks)}
+    </p>`;
+
+  const stage = `
+    <div class="social-card__stage">
+      <div class="social-card__logo" role="img" aria-label="${escapeHtml(sponsorLabel)}" style="background-image: url('${logoSrc}')"></div>
+    </div>`;
+
+  return `
+    ${topBar}
+    <main class="social-card__main">
+      ${thanksLine}
+      <p class="social-card__role">${escapeHtml(copy.role)}</p>
+      ${stage}
+      <p class="social-card__name">${escapeHtml(sponsorLabel)}</p>
+      <p class="social-card__context">${escapeHtml(context)}</p>
+      ${meta}
+    </main>
+    ${footer}`;
 }
 
 function escapeHtml(text) {

@@ -35,6 +35,10 @@ export const COPY = {
     date: "Jul 4–5, 2026",
     venue: "UFG · San Salvador",
     poweredBy: "Powered by",
+    pubBadge: "Cursor Buildathon · 2026",
+    // Headline reads as one sentence: "{sponsor} {pubStatement}".
+    pubStatement: "is building Cursor Buildathon El Salvador with us.",
+    pubContext: "24 hours building with AI · Jul 4–5 · UFG, San Salvador.",
   },
   es: {
     thanks: "Gracias a nuestro sponsor",
@@ -43,13 +47,18 @@ export const COPY = {
     date: "4–5 jul 2026",
     venue: "UFG · San Salvador",
     poweredBy: "Powered by",
+    pubBadge: "Cursor Buildathon · 2026",
+    pubStatement: "está construyendo el Cursor Buildathon El Salvador con nosotros.",
+    pubContext: "24 horas construyendo con IA · 4–5 jul · UFG, San Salvador.",
   },
 };
 
 export const FORMATS = {
   story: { w: 1080, h: 1920, label: "Instagram Story · 1080×1920" },
-  post: { w: 1080, h: 1080, label: "Instagram Post · 1080×1080" },
-  linkedin: { w: 1200, h: 627, label: "LinkedIn · 1200×627" },
+  post: { w: 1080, h: 1080, label: "Instagram Post · 1:1 · 1080×1080" },
+  linkedin: { w: 1080, h: 1080, label: "LinkedIn · 1:1 · 1080×1080" },
+  x: { w: 1080, h: 1080, label: "X · 1:1 · 1080×1080" },
+  banner: { w: 1200, h: 627, label: "Banner · 1.91:1 · 1200×627" },
 };
 
 /** El Salvador backdrop art (halftone). `default` is used on load. */

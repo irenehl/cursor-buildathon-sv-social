@@ -333,8 +333,118 @@
   object-position: center 8%;
 }
 
-/* ── LinkedIn 1200×627 ── */
-.social-card[data-format="linkedin"] {
+/* ── LinkedIn / X publication 1:1 (1080×1080) ── */
+.social-card[data-format="linkedin"],
+.social-card[data-format="x"] {
+  --pad-x: 64px;
+  --pad-y: 64px;
+  --landmark-h: 100%;
+  --meta-size: 15px;
+  --foot-pad: 16px;
+  --foot-gap: 12px;
+  --foot-size: 13px;
+  --foot-logo-w: 96px;
+  --foot-logo-h: 22px;
+}
+
+.social-card[data-format="linkedin"] .social-card__landmark,
+.social-card[data-format="x"] .social-card__landmark {
+  inset: 0;
+  height: 100%;
+}
+
+.social-card[data-format="linkedin"] .social-card__landmark img,
+.social-card[data-format="x"] .social-card__landmark img {
+  opacity: 0.42;
+  mix-blend-mode: screen;
+  object-position: center 22%;
+}
+
+.social-card[data-format="linkedin"][data-landmark="monument"] .social-card__landmark img,
+.social-card[data-format="x"][data-landmark="monument"] .social-card__landmark img {
+  object-position: center 12%;
+}
+
+.social-card[data-format="linkedin"] .social-card__landmark-fade,
+.social-card[data-format="x"] .social-card__landmark-fade {
+  background:
+    linear-gradient(180deg, rgba(8, 8, 8, 0.72) 0%, rgba(8, 8, 8, 0.2) 38%, rgba(8, 8, 8, 0.55) 100%);
+}
+
+.social-card__pub {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0;
+}
+
+.social-card__pub-badge {
+  display: inline-block;
+  padding: 10px 16px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--accent);
+}
+
+.social-card__pub-statement {
+  margin-top: 34px;
+  max-width: 18ch;
+  font-size: 66px;
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+}
+
+.social-card__pub-statement-brand {
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.social-card__pub-context {
+  margin-top: 26px;
+  max-width: 40ch;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  line-height: 1.55;
+  letter-spacing: 0.01em;
+  color: rgba(245, 240, 232, 0.78);
+}
+
+.social-card__pub-grow {
+  flex: 1;
+  min-height: 24px;
+}
+
+.social-card__pub-logo {
+  height: 52px;
+  width: 220px;
+  margin-bottom: 24px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.6));
+}
+
+.social-card[data-format="linkedin"] .social-card__meta,
+.social-card[data-format="x"] .social-card__meta {
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+.social-card[data-format="linkedin"] .social-card__foot,
+.social-card[data-format="x"] .social-card__foot {
+  width: 100%;
+  margin-top: 0;
+}
+
+/* ── Banner 1.91:1 (1200×627) — horizontal link preview only ── */
+.social-card[data-format="banner"] {
   --pad-x: 56px;
   --pad-y: 44px;
   --top-pad: 14px;
@@ -365,7 +475,7 @@
   --foot-logo-h: 20px;
 }
 
-.social-card[data-format="linkedin"] .social-card__landmark {
+.social-card[data-format="banner"] .social-card__landmark {
   left: auto;
   right: 0;
   width: 46%;
@@ -375,7 +485,7 @@
 /* Integrate the volcano into the scene: screen blend drops the black PNG base
    so only the white/orange dots remain, melting into the orange grid.
    A soft mask feathers every edge so there is no block seam. */
-.social-card[data-format="linkedin"] .social-card__landmark img {
+.social-card[data-format="banner"] .social-card__landmark img {
   opacity: 0.9;
   mix-blend-mode: screen;
   -webkit-mask-image:
@@ -387,19 +497,19 @@
     linear-gradient(180deg, transparent 4%, #000 24%, #000 82%, transparent 100%);
   mask-composite: intersect;
 }
-.social-card[data-format="linkedin"][data-landmark="monument"] .social-card__landmark img {
+.social-card[data-format="banner"][data-landmark="monument"] .social-card__landmark img {
   object-position: center 10%;
 }
-.social-card[data-format="linkedin"][data-landmark="volcano"] .social-card__landmark img {
+.social-card[data-format="banner"][data-landmark="volcano"] .social-card__landmark img {
   object-position: center 46%;
 }
 
-/* No dark overlay for LinkedIn — the screen blend + mask handle the blend. */
-.social-card[data-format="linkedin"] .social-card__landmark-fade {
+/* No dark overlay — the screen blend + mask handle the blend. */
+.social-card[data-format="banner"] .social-card__landmark-fade {
   display: none;
 }
 
-.social-card__body--linkedin {
+.social-card__body--banner {
   flex: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -417,11 +527,11 @@
   min-width: 0;
 }
 
-.social-card[data-format="linkedin"] .social-card__name {
+.social-card[data-format="banner"] .social-card__name {
   margin-top: 18px;
 }
 
-.social-card[data-format="linkedin"] .social-card__meta {
+.social-card[data-format="banner"] .social-card__meta {
   margin-top: 18px;
 }
 
@@ -441,4 +551,13 @@
 .social-card[data-sponsor="dma"] .social-card__logo {
   width: 82%;
   height: 56%;
+}
+
+.social-card[data-sponsor="n8n"] .social-card__pub-logo,
+.social-card[data-sponsor="codex"] .social-card__pub-logo,
+.social-card[data-sponsor="netlify"] .social-card__pub-logo,
+.social-card[data-sponsor="elevenlabs"] .social-card__pub-logo,
+.social-card[data-sponsor="searchyou"] .social-card__pub-logo {
+  width: 280px;
+  height: 56px;
 }
