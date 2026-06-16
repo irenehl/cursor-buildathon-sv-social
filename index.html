@@ -18,7 +18,8 @@
         <h1 class="app__title">Sponsor social cards</h1>
         <p class="app__desc">
           Sponsor-first graphics with a volcanic coast / añil night direction.
-          LinkedIn and X use 1:1 feed publications; Banner stays horizontal (1.91:1).
+          LinkedIn and X use 1:1 feed publications; Banner stays horizontal (1.91:1);
+          LinkedIn Banner is the profile cover (4:1).
         </p>
       </header>
 
@@ -67,6 +68,9 @@
         <button type="button" class="format-tab" data-format="linkedin" role="tab">
           LinkedIn
         </button>
+        <button type="button" class="format-tab" data-format="linkedin-banner" role="tab">
+          LinkedIn Banner
+        </button>
         <button type="button" class="format-tab" data-format="x" role="tab">
           X
         </button>
@@ -90,7 +94,8 @@
       <section class="batch-export" aria-labelledby="batch-export-title">
         <h2 class="batch-export__title" id="batch-export-title">Download by folder (one ZIP)</h2>
         <p class="batch-export__desc">
-          One download — unzip to get <code>linkedin/</code>, <code>x/</code>,
+          One download — unzip to get <code>linkedin/</code>, <code>linkedin-banner/</code>,
+          <code>x/</code>,
           <code>banner/</code>, <code>instagram-post/</code>, or
           <code>instagram-story/</code> with every sponsor plus <code>en/</code> and
           <code>es/</code> subfolders. For a real folder on disk without unzipping, run
@@ -99,6 +104,9 @@
         <div class="batch-export__actions">
           <button type="button" class="btn btn--secondary" data-zip-formats="linkedin">
             LinkedIn
+          </button>
+          <button type="button" class="btn btn--secondary" data-zip-formats="linkedin-banner">
+            LinkedIn Banner
           </button>
           <button type="button" class="btn btn--secondary" data-zip-formats="x">
             X
@@ -112,7 +120,7 @@
           <button type="button" class="btn btn--secondary" data-zip-formats="story">
             Instagram Story
           </button>
-          <button type="button" class="btn btn--primary" data-zip-formats="story,post,linkedin,x,banner">
+          <button type="button" class="btn btn--primary" data-zip-formats="story,post,linkedin,linkedin-banner,x,banner">
             Everything
           </button>
         </div>

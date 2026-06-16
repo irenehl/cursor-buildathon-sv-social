@@ -15,6 +15,10 @@
  *       buildathon-sv-codex-banner-en.png
  *       en/
  *       es/
+ *     linkedin-banner/
+ *       buildathon-sv-codex-linkedin-banner-en.png
+ *       en/
+ *       es/
  *     instagram-post/
  *     instagram-story/
  */
@@ -35,6 +39,7 @@ const CHROME =
 
 const FORMAT_FOLDERS = {
   linkedin: "linkedin",
+  "linkedin-banner": "linkedin-banner",
   x: "x",
   banner: "banner",
   post: "instagram-post",
@@ -43,6 +48,7 @@ const FORMAT_FOLDERS = {
 
 const FORMATS = {
   linkedin: { w: 1080, h: 1080 },
+  "linkedin-banner": { w: 1584, h: 396 },
   x: { w: 1080, h: 1080 },
   banner: { w: 1200, h: 627 },
   post: { w: 1080, h: 1080 },
