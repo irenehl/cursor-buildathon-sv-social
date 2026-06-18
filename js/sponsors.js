@@ -21,6 +21,14 @@ export const SPONSORS = [
   { id: "exa", name: "Exa", displayName: "Exa", logo: "exa-dark.svg" },
   { id: "zavu", name: "Zavu", displayName: "Zavu", logo: "zavu-dark.svg" },
   { id: "cursor", name: "Cursor", displayName: "Cursor", logo: "cursor-dark.svg" },
+  { id: "firecrawl", name: "Firecrawl", displayName: "Firecrawl", logo: "firecrawl-dark.svg" },
+  { id: "esrobotica", name: "EsRobotica", displayName: "EsRobotica", logo: "esrobotica-dark.svg" },
+  { id: "rcns", name: "RCNS", displayName: "RCNS", logo: "rcns-dark.svg" },
+  { id: "svnet", name: "SVNet", displayName: "SVNet", logo: "svnet-dark.svg" },
+  { id: "from021", name: "Zero Two One", displayName: "Zero Two One", logo: "from021.svg" },
+  { id: "datamcp", name: "DataMCP", displayName: "DataMCP", logo: "datamcp.svg" },
+  { id: "ailabs", name: "Ai /abs", displayName: "Ai /abs", logo: "ailabs.svg" },
+  { id: "ufg", name: "UFG", displayName: "UFG", logo: "ufg-dark.svg" },
 ];
 
 export function sponsorDisplayName(sponsor) {
@@ -37,19 +45,27 @@ export const COPY = {
     poweredBy: "Powered by",
     pubBadge: "Cursor Buildathon · 2026",
     // Headline reads as one sentence: "{sponsor} {pubStatement}".
-    pubStatement: "is building Cursor Buildathon El Salvador with us.",
+    pubStatement: "is building Cursor Buildathon with us in El Salvador.",
     pubContext: "24 hours building with AI · Jul 4–5 · UFG, San Salvador.",
+    // "All sponsors" wall variant.
+    allEyebrow: "Our sponsors",
+    allTitle: "Thank you to all our sponsors",
+    allContext: "Powering the 24-hour Cursor Buildathon in El Salvador.",
   },
   es: {
     thanks: "Gracias a nuestro sponsor",
     role: "Sponsor oficial",
-    context: "Apoyando el Buildathon Cursor de 24 horas en El Salvador.",
+    context: "Apoyando el Cursor Buildathon de 24 horas en El Salvador.",
     date: "4–5 jul 2026",
     venue: "UFG · San Salvador",
     poweredBy: "Powered by",
     pubBadge: "Cursor Buildathon · 2026",
-    pubStatement: "está construyendo el Cursor Buildathon El Salvador con nosotros.",
+    pubStatement: "está construyendo Cursor Buildathon con nosotros en El Salvador.",
     pubContext: "24 horas construyendo con IA · 4–5 jul · UFG, San Salvador.",
+    // Variante muro "todos los patrocinadores".
+    allEyebrow: "Nuestros patrocinadores",
+    allTitle: "Gracias a todos nuestros patrocinadores",
+    allContext: "Impulsando el Cursor Buildathon de 24 horas en El Salvador.",
   },
 };
 

@@ -647,3 +647,110 @@
   width: 280px;
   height: 56px;
 }
+
+/* ── All-sponsors wall ──
+   Event branding + a responsive grid of every sponsor logo. The grid grows to
+   fill the space left by the header/title/footer and equalizes row heights, so
+   ~20 logos read evenly across every format aspect ratio. */
+.social-card__wall {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0;
+  padding-top: var(--main-top);
+}
+
+.social-card__wall-title {
+  margin-top: var(--role-gap);
+  font-size: var(--wall-title-size);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  max-width: 22ch;
+  color: var(--fg);
+}
+
+.social-card__wall-context {
+  margin-top: var(--context-gap);
+}
+
+.social-card__wall-grid {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  margin-top: var(--wall-gap);
+  display: grid;
+  grid-template-columns: repeat(var(--wall-cols), minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: var(--wall-cell-gap);
+}
+
+.social-card__wall-logo {
+  min-height: 0;
+  padding: var(--wall-cell-pad);
+  border: 1px solid rgba(245, 240, 232, 0.1);
+  border-radius: 16px;
+  background-color: rgba(245, 240, 232, 0.04);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  background-origin: content-box;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.45));
+}
+
+/* Story — tall: 3 across, generous cells. */
+.social-card[data-sponsor="all"][data-format="story"] {
+  --wall-cols: 3;
+  --wall-title-size: 56px;
+  --wall-gap: 34px;
+  --wall-cell-gap: 18px;
+  --wall-cell-pad: 24px;
+}
+
+/* Post — square: 4 across. */
+.social-card[data-sponsor="all"][data-format="post"] {
+  --wall-cols: 4;
+  --wall-title-size: 38px;
+  --wall-gap: 22px;
+  --wall-cell-gap: 14px;
+  --wall-cell-pad: 16px;
+}
+
+/* LinkedIn / X — square publication: 4 across, slightly larger title. */
+.social-card[data-sponsor="all"][data-format="linkedin"],
+.social-card[data-sponsor="all"][data-format="x"] {
+  --main-top: 24px;
+  --role-gap: 18px;
+  --context-gap: 12px;
+  --wall-cols: 4;
+  --wall-title-size: 42px;
+  --wall-gap: 22px;
+  --wall-cell-gap: 14px;
+  --wall-cell-pad: 16px;
+}
+
+/* Banner — wide & short: 5 across, compact chrome. */
+.social-card[data-sponsor="all"][data-format="banner"] {
+  --wall-cols: 5;
+  --wall-title-size: 30px;
+  --wall-gap: 16px;
+  --wall-cell-gap: 12px;
+  --wall-cell-pad: 12px;
+}
+
+/* Banner keeps the volcano on the right half for single cards; the wall grid
+   spans full width above it, so soften the landmark behind the cells. */
+.social-card--all[data-format="banner"] .social-card__landmark img {
+  opacity: 0.5;
+}
+.social-card--all[data-format="banner"] .social-card__wall-context {
+  display: none;
+}
+
+/* On the square publication formats the landmark is a full-bleed wash; keep the
+   logo cells opaque enough to stay legible over it. */
+.social-card--all[data-format="linkedin"] .social-card__wall-logo,
+.social-card--all[data-format="x"] .social-card__wall-logo {
+  background-color: rgba(12, 12, 12, 0.55);
+}
