@@ -75,6 +75,11 @@ export const FORMATS = {
   linkedin: { w: 1080, h: 1080, label: "LinkedIn · 1:1 · 1080×1080" },
   x: { w: 1080, h: 1080, label: "X · 1:1 · 1080×1080" },
   banner: { w: 1200, h: 627, label: "Banner · 1.91:1 · 1200×627" },
+  "linkedin-banner": {
+    w: 1584,
+    h: 396,
+    label: "LinkedIn Banner · 4:1 · 1584×396",
+  },
 };
 
 /** El Salvador backdrop art (halftone). `default` is used on load. */

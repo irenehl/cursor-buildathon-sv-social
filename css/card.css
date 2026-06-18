@@ -539,6 +539,88 @@
   margin-top: 18px;
 }
 
+/* ── LinkedIn profile banner 4:1 (1584×396) ── */
+.social-card[data-format="linkedin-banner"] {
+  --pad-x: 48px;
+  --pad-y: 28px;
+  --top-pad: 10px;
+  --top-gap: 10px;
+  --host-mark-h: 18px;
+  --brand-size: 11px;
+  --eyebrow-size: 11px;
+  --eyebrow-mark: 18px;
+  --role-gap: 8px;
+  --role-size: 10px;
+  --role-pad: 5px 12px;
+  --stage-h: 220px;
+  --stage-pad: 8px;
+  --logo-max-w: 88%;
+  --logo-max-h: 78%;
+  --name-gap: 10px;
+  --name-size: 28px;
+  --context-gap: 8px;
+  --context-size: 12px;
+  --context-max: 38ch;
+  --meta-size: 11px;
+  --landmark-h: 396px;
+  --foot-top: 0px;
+  --foot-pad: 10px;
+  --foot-gap: 10px;
+  --foot-size: 10px;
+  --foot-logo-w: 72px;
+  --foot-logo-h: 16px;
+}
+
+.social-card[data-format="linkedin-banner"] .social-card__landmark {
+  left: auto;
+  right: 0;
+  width: 42%;
+  height: 100%;
+}
+
+.social-card[data-format="linkedin-banner"] .social-card__landmark img {
+  opacity: 0.9;
+  mix-blend-mode: screen;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, #000 42%),
+    linear-gradient(180deg, transparent 6%, #000 28%, #000 78%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, #000 42%),
+    linear-gradient(180deg, transparent 6%, #000 28%, #000 78%, transparent 100%);
+  mask-composite: intersect;
+}
+
+.social-card[data-format="linkedin-banner"][data-landmark="monument"] .social-card__landmark img {
+  object-position: center 8%;
+}
+
+.social-card[data-format="linkedin-banner"][data-landmark="volcano"] .social-card__landmark img {
+  object-position: center 44%;
+}
+
+.social-card[data-format="linkedin-banner"] .social-card__landmark-fade {
+  display: none;
+}
+
+.social-card[data-format="linkedin-banner"] .social-card__body--banner {
+  gap: 28px;
+  padding-top: 10px;
+  padding-right: 22%;
+}
+
+.social-card[data-format="linkedin-banner"] .social-card__name {
+  margin-top: 10px;
+}
+
+.social-card[data-format="linkedin-banner"] .social-card__meta {
+  margin-top: 10px;
+}
+
+.social-card[data-format="linkedin-banner"] .social-card__foot {
+  margin-top: auto;
+}
+
 .social-card__col-logo .social-card__stage {
   margin-top: 0;
 }

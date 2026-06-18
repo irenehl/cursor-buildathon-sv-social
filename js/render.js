@@ -7,7 +7,7 @@ const AILABS_LOGO = "sponsors/ailabs.svg";
 /**
  * @param {object} opts
  * @param {import('./sponsors.js').SPONSORS[number]} opts.sponsor
- * @param {'story'|'post'|'linkedin'|'x'|'banner'} opts.format
+ * @param {'story'|'post'|'linkedin'|'linkedin-banner'|'x'|'banner'} opts.format
  * @param {'en'|'es'} opts.lang
  * @param {string} [opts.headlineOverride]
  * @param {'volcano'|'monument'} [opts.landmark]
@@ -42,7 +42,7 @@ export function buildCardHtml({ sponsor, format, lang, headlineOverride, landmar
 
   let inner = "";
 
-  if (format === "banner") {
+  if (format === "banner" || format === "linkedin-banner") {
     inner = buildBannerInner({ copy, sponsorLabel, context, logoSrc, meta, footer });
   } else if (format === "linkedin" || format === "x") {
     inner = buildPublicationInner({ copy, sponsorLabel, logoSrc, meta, footer });

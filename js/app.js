@@ -30,6 +30,7 @@ const ALL_SPONSOR = { id: "all", name: "All sponsors", isAll: true };
 
 const FORMAT_FOLDERS = {
   linkedin: "linkedin",
+  "linkedin-banner": "linkedin-banner",
   x: "x",
   banner: "banner",
   post: "instagram-post",
