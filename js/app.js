@@ -55,7 +55,7 @@ function populateSponsors() {
 function preloadLogos() {
   for (const s of SPONSORS) {
     const img = new Image();
-    img.src = `logos/${s.logo}`;
+    img.src = `sponsors/${s.logo}`;
   }
 }
 

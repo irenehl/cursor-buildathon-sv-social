@@ -1,8 +1,8 @@
 import { COPY, FORMATS, LANDMARKS, DEFAULT_LANDMARK, sponsorDisplayName } from "./sponsors.js";
 import { cardBackdrop, landmarkLayer } from "./sv-backdrop.js";
 
-const HOST_LOGO = "logos/cursor-dark.svg";
-const AILABS_LOGO = "logos/ailabs.svg";
+const HOST_LOGO = "sponsors/cursor-dark.svg";
+const AILABS_LOGO = "sponsors/ailabs.svg";
 
 /**
  * @param {object} opts
@@ -16,7 +16,7 @@ export function buildCardHtml({ sponsor, format, lang, headlineOverride, landmar
   const copy = COPY[lang];
   const { w, h } = FORMATS[format];
   const context = headlineOverride?.trim() || copy.context;
-  const logoSrc = `logos/${sponsor.logo}`;
+  const logoSrc = `sponsors/${sponsor.logo}`;
   const sponsorLabel = sponsorDisplayName(sponsor);
   const land = LANDMARKS[landmark] || LANDMARKS[DEFAULT_LANDMARK];
 

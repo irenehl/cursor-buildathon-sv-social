@@ -99,7 +99,7 @@ No npm install required (uses Node's built-in Chrome DevTools driver). Flags: `-
 
 ## Logos
 
-Sponsor logos live in `logos/` (SVG files referenced by `logo` in `js/sponsors.js`).
+Sponsor logos live in `sponsors/` (SVG files referenced by `logo` in `js/sponsors.js`).
 Add or replace a file there, then update `SPONSORS` if the filename changes.
 
 ## Customize copy
