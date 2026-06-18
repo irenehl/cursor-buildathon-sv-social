@@ -1,4 +1,4 @@
-import { COPY, FORMATS, LANDMARKS, DEFAULT_LANDMARK, sponsorDisplayName } from "./sponsors.js";
+import { COPY, FORMATS, LANDMARKS, DEFAULT_LANDMARK, sponsorDisplayName, SPONSORS } from "./sponsors.js";
 import { cardBackdrop, landmarkLayer } from "./sv-backdrop.js";
 
 const HOST_LOGO = "sponsors/cursor-dark.svg";
@@ -11,8 +11,13 @@ const AILABS_LOGO = "sponsors/ailabs.svg";
  * @param {'en'|'es'} opts.lang
  * @param {string} [opts.headlineOverride]
  * @param {'volcano'|'monument'} [opts.landmark]
+ * @param {boolean} [opts.isAll] Render the all-sponsors wall instead of one sponsor.
  */
-export function buildCardHtml({ sponsor, format, lang, headlineOverride, landmark }) {
+export function buildCardHtml({ sponsor, format, lang, headlineOverride, landmark, isAll }) {
+  if (isAll || sponsor?.id === "all") {
+    return buildAllCardHtml({ format, lang, headlineOverride, landmark });
+  }
+
   const copy = COPY[lang];
   const { w, h } = FORMATS[format];
   const context = headlineOverride?.trim() || copy.context;
@@ -52,12 +57,77 @@ export function buildCardHtml({ sponsor, format, lang, headlineOverride, landmar
   data-sponsor="${escapeHtml(sponsor.id)}"
   data-landmark="${escapeHtml(land.id)}"
   style="--frame-w: ${w}px; --frame-h: ${h}px;"
-  aria-label="Thank you ${escapeHtml(sponsor.name)} — Cursor Buildathon El Salvador"
+  aria-label="Thank you ${escapeHtml(sponsor.name)} — Cursor Buildathon, El Salvador"
 >
   ${cardBackdrop()}
   ${landmarkLayer(land.file)}
   <div class="social-card__inner">
     ${inner}
+  </div>
+</article>`;
+}
+
+/** Sponsor-wall variant — event branding + a responsive grid of every sponsor logo. */
+function buildAllCardHtml({ format, lang, headlineOverride, landmark }) {
+  const copy = COPY[lang];
+  const { w, h } = FORMATS[format];
+  const context = headlineOverride?.trim() || copy.allContext;
+  const land = LANDMARKS[landmark] || LANDMARKS[DEFAULT_LANDMARK];
+
+  const topBar = `
+    <header class="social-card__top">
+      <div class="social-card__top-brand">
+        <img class="social-card__host-mark" src="${HOST_LOGO}" alt="Cursor" crossorigin="anonymous" />
+        <span class="social-card__brand">Buildathon · 2026</span>
+      </div>
+      <span class="social-card__top-place">El Salvador</span>
+    </header>`;
+
+  const meta = `
+    <div class="social-card__meta">
+      <span>${escapeHtml(copy.date)}</span>
+      <span class="social-card__meta-sep">·</span>
+      <span class="social-card__meta-hot">24H</span>
+      <span class="social-card__meta-sep">·</span>
+      <span>${escapeHtml(copy.venue)}</span>
+    </div>`;
+
+  const footer = `
+    <footer class="social-card__foot">
+      <span class="social-card__foot-label">${escapeHtml(copy.poweredBy)}</span>
+      <div class="social-card__foot-logo" role="img" aria-label="Ai /abs" style="background-image: url('${AILABS_LOGO}')"></div>
+    </footer>`;
+
+  const cells = SPONSORS.map((s) => {
+    const label = sponsorDisplayName(s);
+    return `<div class="social-card__wall-logo" role="img" aria-label="${escapeHtml(label)}" style="background-image: url('sponsors/${s.logo}')"></div>`;
+  }).join("");
+
+  return `
+<article
+  class="social-card social-card--all"
+  data-format="${format}"
+  data-sponsor="all"
+  data-landmark="${escapeHtml(land.id)}"
+  style="--frame-w: ${w}px; --frame-h: ${h}px;"
+  aria-label="Thank you to all sponsors — Cursor Buildathon, El Salvador"
+>
+  ${cardBackdrop()}
+  ${landmarkLayer(land.file)}
+  <div class="social-card__inner">
+    ${topBar}
+    <main class="social-card__wall">
+      <p class="social-card__eyebrow">
+        <span class="social-card__eyebrow-mark"></span>${escapeHtml(copy.allEyebrow)}
+      </p>
+      <h1 class="social-card__wall-title">${escapeHtml(copy.allTitle)}</h1>
+      <p class="social-card__context social-card__wall-context">${escapeHtml(context)}</p>
+      <div class="social-card__wall-grid" role="list" aria-label="Sponsor logos">
+        ${cells}
+      </div>
+      ${meta}
+    </main>
+    ${footer}
   </div>
 </article>`;
 }

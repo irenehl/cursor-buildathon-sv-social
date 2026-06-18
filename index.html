@@ -11,128 +11,288 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/app.css" />
+    <script>
+      (function () {
+        var t = localStorage.getItem("sv-social-shell-theme");
+        if (t === "light" || t === "dark") {
+          document.documentElement.setAttribute("data-shell-theme", t);
+        }
+      })();
+    </script>
   </head>
   <body>
-    <div class="app">
-      <header class="app__header">
-        <h1 class="app__title">Sponsor social cards</h1>
-        <p class="app__desc">
-          Sponsor-first graphics with a volcanic coast / añil night direction.
-          LinkedIn and X use 1:1 feed publications; Banner stays horizontal (1.91:1).
-        </p>
-      </header>
+    <a class="skip-link" href="#preview-panel">Skip to preview</a>
 
-      <div class="controls">
-        <div class="control">
-          <label for="sponsor">Sponsor</label>
-          <select id="sponsor"></select>
-        </div>
-        <div class="control">
-          <label for="lang">Language</label>
-          <select id="lang">
-            <option value="en">English</option>
-            <option value="es">Español</option>
-          </select>
-        </div>
-        <div class="control">
-          <label for="landmark">El Salvador backdrop</label>
-          <select id="landmark">
-            <option value="volcano">Volcán Santa Ana</option>
-            <option value="monument">Divino Salvador del Mundo</option>
-          </select>
-        </div>
-        <div class="control" style="grid-column: 1 / -1">
-          <label for="headline">Tagline (optional override)</label>
-          <input
-            id="headline"
-            type="text"
-            placeholder="Powering the builders gathering in San Salvador."
-          />
-        </div>
-      </div>
-
-      <div class="format-tabs" role="tablist" aria-label="Export format">
-        <button
-          type="button"
-          class="format-tab is-active"
-          data-format="story"
-          role="tab"
-          aria-selected="true"
-        >
-          Instagram Story
-        </button>
-        <button type="button" class="format-tab" data-format="post" role="tab">
-          Instagram Post
-        </button>
-        <button type="button" class="format-tab" data-format="linkedin" role="tab">
-          LinkedIn
-        </button>
-        <button type="button" class="format-tab" data-format="x" role="tab">
-          X
-        </button>
-        <button type="button" class="format-tab" data-format="banner" role="tab">
-          Banner
-        </button>
-      </div>
-
-      <div class="actions">
-        <button type="button" class="btn btn--primary" id="export-one">
-          Download PNG
-        </button>
-        <button type="button" class="btn btn--secondary" id="export-all">
-          Download all sponsors — ZIP (this format)
-        </button>
-        <a class="btn btn--secondary" id="preview-anim" href="#" target="_blank" rel="noopener">
-          Preview animated story
-        </a>
-      </div>
-
-      <section class="batch-export" aria-labelledby="batch-export-title">
-        <h2 class="batch-export__title" id="batch-export-title">Download by folder (one ZIP)</h2>
-        <p class="batch-export__desc">
-          One download — unzip to get <code>linkedin/</code>, <code>x/</code>,
-          <code>banner/</code>, <code>instagram-post/</code>, or
-          <code>instagram-story/</code> with every sponsor plus <code>en/</code> and
-          <code>es/</code> subfolders. For a real folder on disk without unzipping, run
-          <code>node scripts/export-pngs.mjs</code> (see README).
-        </p>
-        <div class="batch-export__actions">
-          <button type="button" class="btn btn--secondary" data-zip-formats="linkedin">
-            LinkedIn
-          </button>
-          <button type="button" class="btn btn--secondary" data-zip-formats="x">
-            X
-          </button>
-          <button type="button" class="btn btn--secondary" data-zip-formats="banner">
-            Banner
-          </button>
-          <button type="button" class="btn btn--secondary" data-zip-formats="post">
-            Instagram Post
-          </button>
-          <button type="button" class="btn btn--secondary" data-zip-formats="story">
-            Instagram Story
-          </button>
-          <button type="button" class="btn btn--primary" data-zip-formats="story,post,linkedin,x,banner">
-            Everything
-          </button>
-        </div>
-      </section>
-
-      <p class="status" id="status" aria-live="polite"></p>
-
-      <div class="preview-wrap">
-        <span class="preview-label" id="preview-label">Instagram Story · 1080×1920</span>
-        <div class="preview-stage" id="preview-stage">
-          <div class="preview-scaler" id="preview-scaler"></div>
-        </div>
-      </div>
-
-      <aside class="hint">
-        <strong>Quick start</strong> — from this folder run
+    <div class="server-banner" id="server-banner" hidden>
+      <p class="server-banner__text">
+        Run a local server — logos and export fail on
+        <code>file://</code>. From this folder:
         <code>python3 -m http.server 8787</code> then open
-        <code>http://localhost:8787</code>. Logos live in <code>sponsors/</code>.
-        Edit copy in <code>js/sponsors.js</code>.
+        <code>http://localhost:8787</code>.
+      </p>
+      <button type="button" class="server-banner__dismiss" id="server-banner-dismiss">
+        Dismiss
+      </button>
+    </div>
+
+    <div class="app-layout is-sidebar-closed" id="app-layout">
+      <div class="sidebar-backdrop" id="sidebar-backdrop" hidden aria-hidden="true"></div>
+
+      <aside class="sidebar" id="sidebar" aria-label="Card editor">
+        <div class="sidebar__head">
+          <div class="sidebar__brand">
+            <div class="sidebar__title-row">
+              <h1 class="sidebar__title">Sponsor social cards</h1>
+              <span class="sidebar__sponsor-count" id="sponsor-count" aria-label="Sponsor count"></span>
+            </div>
+            <p class="sidebar__desc">
+              Adjust settings — preview updates instantly. Export saves a PNG.
+            </p>
+          </div>
+          <button
+            type="button"
+            class="sidebar__close"
+            id="sidebar-close"
+            aria-label="Close menu"
+          >
+            <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+              <path
+                d="M4 4l10 10M14 4L4 14"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div class="sidebar__body">
+          <section class="sidebar__section" aria-labelledby="section-configure">
+            <h2 class="sidebar__section-title" id="section-configure">Configure</h2>
+            <div class="controls">
+              <div class="control">
+                <label for="sponsor">Sponsor</label>
+                <select id="sponsor"></select>
+              </div>
+              <fieldset class="control">
+                <legend class="control__legend">Language</legend>
+                <div class="lang-radios">
+                  <label class="lang-radio">
+                    <input type="radio" name="lang" id="lang-en" value="en" checked />
+                    <span class="lang-radio__text">EN</span>
+                  </label>
+                  <label class="lang-radio">
+                    <input type="radio" name="lang" id="lang-es" value="es" />
+                    <span class="lang-radio__text">ES</span>
+                  </label>
+                </div>
+              </fieldset>
+              <div class="control control--full" hidden>
+                <label for="landmark">El Salvador backdrop</label>
+                <select id="landmark">
+                  <option value="volcano" selected>Volcán Santa Ana</option>
+                  <option value="monument">Divino Salvador del Mundo</option>
+                </select>
+              </div>
+              <div class="control control--full">
+                <label for="headline">Tagline (optional override)</label>
+                <input
+                  id="headline"
+                  type="text"
+                  placeholder="Powering the builders gathering in San Salvador."
+                />
+              </div>
+            </div>
+          </section>
+
+          <section class="sidebar__section" aria-labelledby="section-format">
+            <h2 class="sidebar__section-title" id="section-format">Format</h2>
+            <div class="format-tabs" role="tablist" aria-label="Export format">
+              <button
+                type="button"
+                class="format-tab is-active"
+                data-format="story"
+                role="tab"
+                aria-selected="true"
+                aria-controls="preview-panel"
+                aria-label="Instagram Story"
+                tabindex="0"
+              >
+                IG Story
+              </button>
+              <button
+                type="button"
+                class="format-tab"
+                data-format="post"
+                role="tab"
+                aria-selected="false"
+                aria-controls="preview-panel"
+                aria-label="Instagram Post"
+                tabindex="-1"
+              >
+                IG Post
+              </button>
+              <button
+                type="button"
+                class="format-tab"
+                data-format="linkedin"
+                role="tab"
+                aria-selected="false"
+                aria-controls="preview-panel"
+                tabindex="-1"
+              >
+                LinkedIn
+              </button>
+              <button
+                type="button"
+                class="format-tab"
+                data-format="x"
+                role="tab"
+                aria-selected="false"
+                aria-controls="preview-panel"
+                tabindex="-1"
+              >
+                X
+              </button>
+              <button
+                type="button"
+                class="format-tab"
+                data-format="banner"
+                role="tab"
+                aria-selected="false"
+                aria-controls="preview-panel"
+                tabindex="-1"
+              >
+                Banner
+              </button>
+            </div>
+          </section>
+
+          <section class="sidebar__section" aria-labelledby="section-export">
+            <h2 class="sidebar__section-title" id="section-export">Export</h2>
+            <div class="actions">
+              <button type="button" class="btn btn--primary btn--block" id="export-one">
+                Download PNG
+              </button>
+              <a
+                class="btn btn--secondary btn--block"
+                id="preview-anim"
+                href="#"
+                target="_blank"
+                rel="noopener"
+              >
+                Preview animated story
+              </a>
+              <button type="button" class="btn btn--secondary btn--block" id="export-all">
+                All sponsors — ZIP (this format)
+              </button>
+            </div>
+          </section>
+
+          <section class="sidebar__section">
+            <details class="batch-disclosure">
+              <summary class="batch-disclosure__summary">Bulk ZIP downloads (all sponsors)</summary>
+              <p class="batch-disclosure__desc">
+                One download — unzip to get <code>linkedin/</code>, <code>x/</code>,
+                <code>banner/</code>, <code>instagram-post/</code>, or
+                <code>instagram-story/</code> with every sponsor plus <code>en/</code> and
+                <code>es/</code> subfolders. For a real folder on disk without unzipping, run
+                <code>node scripts/export-pngs.mjs</code> (see README).
+              </p>
+              <div class="batch-disclosure__actions">
+                <button type="button" class="btn btn--secondary" data-zip-formats="linkedin">
+                  LinkedIn
+                </button>
+                <button type="button" class="btn btn--secondary" data-zip-formats="x">
+                  X
+                </button>
+                <button type="button" class="btn btn--secondary" data-zip-formats="banner">
+                  Banner
+                </button>
+                <button type="button" class="btn btn--secondary" data-zip-formats="post">
+                  Instagram Post
+                </button>
+                <button type="button" class="btn btn--secondary" data-zip-formats="story">
+                  Instagram Story
+                </button>
+                <button
+                  type="button"
+                  class="btn btn--primary"
+                  data-zip-formats="story,post,linkedin,x,banner"
+                >
+                  Everything
+                </button>
+              </div>
+            </details>
+          </section>
+        </div>
       </aside>
+
+      <div class="app-main">
+        <header class="app-topbar">
+          <button
+            type="button"
+            class="sidebar-toggle"
+            id="sidebar-toggle"
+            aria-expanded="false"
+            aria-controls="sidebar"
+          >
+            <svg class="sidebar-toggle__icon" width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+              <path
+                d="M3 5h14M3 10h14M3 15h14"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <span class="sidebar-toggle__label">Menu</span>
+          </button>
+          <span class="app-topbar__format" id="preview-label">Instagram Story · 1080×1920</span>
+          <button
+            type="button"
+            class="theme-toggle"
+            id="theme-toggle"
+            aria-label="Switch to light theme"
+          >
+            <svg class="theme-toggle__icon" data-icon="sun" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+              <circle cx="9" cy="9" r="3.5" stroke="currentColor" stroke-width="1.5" fill="none" />
+              <path
+                d="M9 1.5v2M9 14.5v2M1.5 9h2M14.5 9h2M3.4 3.4l1.4 1.4M13.2 13.2l1.4 1.4M3.4 14.6l1.4-1.4M13.2 4.8l1.4-1.4"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <svg class="theme-toggle__icon" data-icon="moon" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+              <path
+                d="M14.5 10.2a5.5 5.5 0 01-6.7-6.7 5.5 5.5 0 108.7 6.7z"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+                fill="none"
+              />
+            </svg>
+          </button>
+        </header>
+
+        <main id="preview-panel" class="app-content">
+          <div class="preview-stage" id="preview-stage">
+            <div class="preview-scaler" id="preview-scaler"></div>
+          </div>
+          <div
+            class="export-progress"
+            id="export-progress"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            hidden
+          >
+            <div class="export-progress__bar" id="export-progress-bar"></div>
+          </div>
+          <p class="status" id="status" aria-live="polite"></p>
+        </main>
+      </div>
     </div>
 
     <div class="export-root" id="export-root" aria-hidden="true"></div>
