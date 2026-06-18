@@ -99,17 +99,8 @@ No npm install required (uses Node's built-in Chrome DevTools driver). Flags: `-
 
 ## Logos
 
-Logos symlink to the main project:
-
-```
-logos/ → ../cursor-buildathon-sv/public/sponsors/
-```
-
-If the symlink breaks, recreate it:
-
-```bash
-ln -sf ../cursor-buildathon-sv/public/sponsors logos
-```
+Sponsor logos live in `logos/` (SVG files referenced by `logo` in `js/sponsors.js`).
+Add or replace a file there, then update `SPONSORS` if the filename changes.
 
 ## Customize copy
 
