@@ -1,4 +1,4 @@
-/** Sponsor list — logo paths relative to /logos/ (symlinked from main repo). */
+/** Sponsor list — logo paths relative to /sponsors/. */
 /** `displayName` is verbatim brand typography on cards (never auto-uppercased). */
 export const SPONSORS = [
   { id: "n8n", name: "n8n", displayName: "n8n", logo: "n8n-logo-dark.svg" },
