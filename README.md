@@ -11,6 +11,7 @@ Sponsor-first social graphics for Cursor Buildathon SV: dark site palette, massi
 | Instagram Story | 1080 × 1920 | 9:16 | Stories / Reels cover |
 | Instagram Post | 1080 × 1080 | 1:1 | Feed square (logo hero) |
 | LinkedIn | 1080 × 1080 | 1:1 | Feed publication (typographic) |
+| LinkedIn Banner | 1584 × 396 | 4:1 | Profile cover banner |
 | X | 1080 × 1080 | 1:1 | Feed publication (typographic) |
 | Banner | 1200 × 627 | 1.91:1 | Horizontal link preview only |
 
@@ -26,7 +27,7 @@ Open **http://localhost:8787**
 1. Choose sponsor + language
 2. Pick format tab
 3. **Download PNG** (one card) or **Download all sponsors — ZIP** (current format tab)
-4. Or use **Download by folder** for LinkedIn / X / Banner / Instagram Post / Story / Everything — each is **one ZIP file**
+4. Or use **Download by folder** for LinkedIn / LinkedIn Banner / X / Banner / Instagram Post / Story / Everything — each is **one ZIP file**
 
 ### Folder on disk (no unzip)
 
@@ -41,13 +42,14 @@ Writes everything to `out/social-pngs/`:
 ```
 out/social-pngs/
   linkedin/
+  linkedin-banner/
   x/
   banner/
   instagram-post/
   instagram-story/
 ```
 
-Flags: `--format linkedin|x|banner|post|story|all`, `--lang en|es|all`, `--landmark`, `--out`.
+Flags: `--format linkedin|linkedin-banner|x|banner|post|story|all`, `--lang en|es|all`, `--landmark`, `--out`.
 
 ### Folder ZIP structure (browser)
 
@@ -58,6 +60,8 @@ linkedin/
   buildathon-sv-codex-linkedin-en.png   ← all sponsors (EN + ES)
   en/
   es/
+linkedin-banner/
+  …
 x/
   …
 banner/

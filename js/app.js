@@ -22,6 +22,7 @@ const LANGS = ["en", "es"];
 
 const FORMAT_FOLDERS = {
   linkedin: "linkedin",
+  "linkedin-banner": "linkedin-banner",
   x: "x",
   banner: "banner",
   post: "instagram-post",
