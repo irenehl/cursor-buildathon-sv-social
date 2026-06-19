@@ -1090,8 +1090,8 @@
   --wall-tier1-col-gap: 40px;
   --wall-tier2-row-gap: 24px;
   --wall-tier2-col-gap: 36px;
-  --wall-tier3-row-gap: 20px;
-  --wall-tier3-col-gap: 30px;
+  --wall-tier3-row-gap: 16px;
+  --wall-tier3-col-gap: 24px;
   --wall-divider-my: 12px;
   --wall-divider-size: 11px;
 }
@@ -1139,8 +1139,8 @@
   --wall-tier1-col-gap: 38px;
   --wall-tier2-row-gap: 18px;
   --wall-tier2-col-gap: 32px;
-  --wall-tier3-row-gap: 14px;
-  --wall-tier3-col-gap: 26px;
+  --wall-tier3-row-gap: 12px;
+  --wall-tier3-col-gap: 22px;
   --wall-divider-my: 7px;
   --wall-divider-size: 10px;
 }
@@ -1158,8 +1158,8 @@
   --wall-tier1-col-gap: 40px;
   --wall-tier2-row-gap: 18px;
   --wall-tier2-col-gap: 34px;
-  --wall-tier3-row-gap: 14px;
-  --wall-tier3-col-gap: 26px;
+  --wall-tier3-row-gap: 12px;
+  --wall-tier3-col-gap: 22px;
   --wall-divider-my: 7px;
   --wall-divider-size: 10px;
 }
@@ -1173,8 +1173,8 @@
   --wall-tier1-col-gap: 28px;
   --wall-tier2-row-gap: 10px;
   --wall-tier2-col-gap: 24px;
-  --wall-tier3-row-gap: 8px;
-  --wall-tier3-col-gap: 18px;
+  --wall-tier3-row-gap: 7px;
+  --wall-tier3-col-gap: 16px;
   --wall-divider-my: 4px;
   --wall-divider-size: 9px;
 }
@@ -1188,8 +1188,8 @@
   --wall-tier1-col-gap: 22px;
   --wall-tier2-row-gap: 8px;
   --wall-tier2-col-gap: 18px;
-  --wall-tier3-row-gap: 6px;
-  --wall-tier3-col-gap: 14px;
+  --wall-tier3-row-gap: 5px;
+  --wall-tier3-col-gap: 12px;
   --wall-divider-my: 2px;
   --wall-divider-size: 8px;
 }

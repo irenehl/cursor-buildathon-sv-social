@@ -9,8 +9,10 @@ export const SPONSORS = [
   { id: "elevenlabs", name: "ElevenLabs", displayName: "ElevenLabs", logo: "elevenlabs-dark.svg" },
   { id: "simov", name: "Simov", displayName: "Simov", logo: "simov-dark.svg" },
   { id: "kreali", name: "Kreali", displayName: "Kreali", logo: "kreali-dark.svg" },
+  { id: "maca", name: "Maca", displayName: "Maca", logo: "maca-dark.svg" },
   { id: "weris", name: "Weris", displayName: "Weris", logo: "weris_dark.svg" },
   { id: "boxful", name: "Boxful", displayName: "Boxful", logo: "boxful-dark.svg" },
+  { id: "crafter", name: "Crafter", displayName: "Crafter", logo: "crafter-dark.svg" },
   { id: "drop", name: "Drop", displayName: "Drop", logo: "drop-dark.svg" },
   { id: "gamesquad", name: "GameSquad", displayName: "GameSquad", logo: "gamesquad-dark.svg" },
   { id: "searchyou", name: "SearchYou", displayName: "SearchYou", logo: "searchyou-dark.svg" },
@@ -24,10 +26,11 @@ export const SPONSORS = [
   { id: "firecrawl", name: "Firecrawl", displayName: "Firecrawl", logo: "firecrawl-dark.svg" },
   { id: "esrobotica", name: "EsRobotica", displayName: "EsRobotica", logo: "esrobotica-dark.svg" },
   { id: "rcns", name: "RCNS", displayName: "RCNS", logo: "rcns-dark.svg" },
-  { id: "svnet", name: "SVNet", displayName: "SVNet", logo: "svnet-dark.svg" },
   { id: "from021", name: "Zero Two One", displayName: "Zero Two One", logo: "from021.svg" },
   { id: "datamcp", name: "DataMCP", displayName: "DataMCP", logo: "datamcp.svg" },
   { id: "ailabs", name: "Ai /abs", displayName: "Ai /abs", logo: "ailabs.svg" },
+  { id: "gad-dev", name: "GAD Dev", displayName: "GAD Dev", logo: "gad-dev.svg" },
+  { id: "mistral", name: "Mistral", displayName: "Mistral", logo: "mistral.svg" },
   { id: "ufg", name: "UFG", displayName: "UFG", logo: "ufg-dark.svg" },
 ];
 

@@ -40,8 +40,10 @@ const LOGO_AR = {
   elevenlabs: 7.71,
   simov: 6.0,
   kreali: 3.46,
+  maca: 2.43,
   weris: 3.64,
   boxful: 4.25,
+  crafter: 3.76,
   drop: 3.18,
   gamesquad: 1.05,
   searchyou: 6.45,
@@ -55,10 +57,11 @@ const LOGO_AR = {
   firecrawl: 4.31,
   esrobotica: 6.92,
   rcns: 4.15,
-  svnet: 4.34,
   from021: 2.63,
   datamcp: 0.89,
   ailabs: 4.01,
+  "gad-dev": 3.39,
+  mistral: 4.42,
   ufg: 1.76,
 };
 
@@ -109,20 +112,20 @@ const WALL_TIER2_ROW_GAP = {
 
 /** Tier-3 gaps per format — must match card.css --wall-tier3-*-gap. */
 const WALL_TIER3_COL_GAP = {
-  story: 30,
-  post: 26,
-  linkedin: 26,
-  x: 26,
-  banner: 18,
-  "linkedin-banner": 14,
+  story: 24,
+  post: 22,
+  linkedin: 22,
+  x: 22,
+  banner: 16,
+  "linkedin-banner": 12,
 };
 const WALL_TIER3_ROW_GAP = {
-  story: 20,
-  post: 14,
-  linkedin: 14,
-  x: 14,
-  banner: 8,
-  "linkedin-banner": 6,
+  story: 16,
+  post: 12,
+  linkedin: 12,
+  x: 12,
+  banner: 7,
+  "linkedin-banner": 5,
 };
 
 const WALL_TIER1_HEIGHT_BUDGET = {
@@ -135,34 +138,34 @@ const WALL_TIER1_HEIGHT_BUDGET = {
 };
 
 const WALL_TIER3_HEIGHT_BUDGET = {
-  story: 980,
-  post: 380,
-  linkedin: 380,
-  x: 380,
-  banner: 185,
-  "linkedin-banner": 90,
+  story: 1040,
+  post: 400,
+  linkedin: 400,
+  x: 400,
+  banner: 195,
+  "linkedin-banner": 96,
 };
 
 const WALL_GEOM = {
   post: {
     tier1: { area: 14500, hMin: 42, hMax: 150, wMax: 340 },
     tier2: { area: 6200, hMin: 40, hMax: 92, wMax: 196 },
-    tier3: { area: 3300, hMin: 32, hMax: 60, wMax: 140 },
+    tier3: { area: 2900, hMin: 28, hMax: 54, wMax: 128 },
   },
   linkedin: {
     tier1: { area: 14500, hMin: 42, hMax: 150, wMax: 340 },
     tier2: { area: 6200, hMin: 40, hMax: 92, wMax: 196 },
-    tier3: { area: 3300, hMin: 32, hMax: 60, wMax: 140 },
+    tier3: { area: 2900, hMin: 28, hMax: 54, wMax: 128 },
   },
   x: {
     tier1: { area: 14500, hMin: 42, hMax: 150, wMax: 340 },
     tier2: { area: 6200, hMin: 40, hMax: 92, wMax: 196 },
-    tier3: { area: 3300, hMin: 32, hMax: 60, wMax: 140 },
+    tier3: { area: 2900, hMin: 28, hMax: 54, wMax: 128 },
   },
   story: {
     tier1: { area: 17200, hMin: 46, hMax: 168, wMax: 350 },
     tier2: { area: 7800, hMin: 44, hMax: 100, wMax: 220 },
-    tier3: { area: 4200, hMin: 38, hMax: 72, wMax: 162 },
+    tier3: { area: 3600, hMin: 34, hMax: 64, wMax: 148 },
   },
   banner: {
     tier1: { area: 7600, hMin: 30, hMax: 96, wMax: 245 },
