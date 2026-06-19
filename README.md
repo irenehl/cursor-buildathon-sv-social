@@ -113,6 +113,46 @@ Edit `js/sponsors.js`:
 - `COPY.en` / `COPY.es` — role labels, cultural cue line, footer
 - `SPONSORS` — add/remove partners, logo filenames, and `displayName` (verbatim brand typography on cards; never auto-uppercased)
 
+## Mentor cards
+
+Toggle **Mentors** in the sidebar to switch to personal first-person cards (LinkedIn / X). Default headline voice: **I'm mentoring at…** or **I'm joining…**.
+
+### Mentor data (Markdown)
+
+Mentors load at runtime from `data/mentors/` — no JS edits needed to add someone new.
+
+1. Copy [`data/mentors/_template.md`](data/mentors/_template.md) → `data/mentors/{slug}.md`
+2. Add `{slug}` to [`data/mentors/manifest.json`](data/mentors/manifest.json)
+3. Drop a headshot into `assets/mentors/photos/{slug}.png` (or `.jpg` / `.webp`)
+
+Each `.md` file uses YAML frontmatter:
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| `id` | yes | URL-safe slug (usually matches filename) |
+| `name` | yes | Full name on the card |
+| `title` | no | Job title (LinkedIn / X publication line) |
+| `company` | no | Company name |
+| `role` | no | Short role under the name; defaults to `title · company` |
+| `handle` | no | e.g. `@walter` |
+| `voice` | no | `mentoring` (default) or `joining` |
+| `backdrop` | no | `coatepeque`, `surf`, `coffee`, `ceiba`, `milpa`, `izalco` |
+| `link` | no | LinkedIn / scheduler URL (reference only) |
+| `photo` | no | Filename stem; defaults to `id` |
+
+Text below the `---` closing fence is bio/notes (not rendered on cards).
+
+Card copy and backdrop library still live in [`js/mentors.js`](js/mentors.js) (`MENTOR_COPY`, `MENTOR_BACKDROPS`).
+
+### Assets
+
+- **Headshots:** `assets/mentors/photos/{slug}.png` (preferred). Legacy path `assets/mentors/{slug}.png` still works. Missing photo → monogram initials.
+- **Backdrops:** halftone PNGs in `assets/mentors/backdrops/`. Use **El Salvador backdrop** in the sidebar to swap scenes without editing code.
+
+Per-backdrop cropping is tuned in `css/card.css` under `[data-backdrop="…"]`.
+
+> Animated story video (`.mp4`) and CLI export scripts remain sponsor-only for now.
+
 ## Design notes
 
 - **Sponsor-first:** the partner logo fills a large hero stage (fixed box + `object-fit: contain`, so even small SVGs scale up).

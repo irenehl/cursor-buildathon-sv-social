@@ -70,8 +70,21 @@
           <section class="sidebar__section" aria-labelledby="section-configure">
             <h2 class="sidebar__section-title" id="section-configure">Configure</h2>
             <div class="controls">
+              <fieldset class="control control--full">
+                <legend class="control__legend">Card type</legend>
+                <div class="mode-radios">
+                  <label class="mode-radio">
+                    <input type="radio" name="card-mode" id="mode-sponsors" value="sponsors" checked />
+                    <span class="mode-radio__text">Sponsors</span>
+                  </label>
+                  <label class="mode-radio">
+                    <input type="radio" name="card-mode" id="mode-mentors" value="mentors" />
+                    <span class="mode-radio__text">Mentors</span>
+                  </label>
+                </div>
+              </fieldset>
               <div class="control">
-                <label for="sponsor">Sponsor</label>
+                <label for="sponsor" id="subject-label">Sponsor</label>
                 <select id="sponsor"></select>
               </div>
               <fieldset class="control">
@@ -87,6 +100,29 @@
                   </label>
                 </div>
               </fieldset>
+              <div class="control control--full mentor-only" id="mentor-voice-control" hidden>
+                <label for="mentor-voice">Personal voice</label>
+                <select id="mentor-voice">
+                  <option value="mentoring">I'm mentoring</option>
+                  <option value="joining">I'm joining</option>
+                </select>
+              </div>
+              <div class="control control--full mentor-only" id="mentor-backdrop-control" hidden>
+                <label for="mentor-backdrop">El Salvador backdrop</label>
+                <select id="mentor-backdrop"></select>
+              </div>
+              <div class="control control--full mentor-only" id="mentor-photo-control" hidden>
+                <label for="mentor-photo">Portrait photo</label>
+                <select id="mentor-photo"></select>
+              </div>
+              <div class="control control--full mentor-only" id="mentor-title-control" hidden>
+                <label for="mentor-title">Job title</label>
+                <input id="mentor-title" type="text" placeholder="Founder & CEO" />
+              </div>
+              <div class="control control--full mentor-only" id="mentor-company-control" hidden>
+                <label for="mentor-company">Company</label>
+                <input id="mentor-company" type="text" placeholder="Company" />
+              </div>
               <div class="control control--full" hidden>
                 <label for="landmark">El Salvador backdrop</label>
                 <select id="landmark">

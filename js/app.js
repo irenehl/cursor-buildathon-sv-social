@@ -1,9 +1,23 @@
 import { SPONSORS, FORMATS, COPY } from "./sponsors.js";
-import { buildCardHtml } from "./render.js";
+import { MENTORS, MENTOR_COPY, MENTOR_BACKDROPS, MENTOR_PHOTOS } from "./mentors.js";
+import { loadMentors } from "./mentors-loader.js";
+import { buildCardHtml, buildMentorCardHtml } from "./render.js";
 
 const $ = (sel) => document.querySelector(sel);
 
 const sponsorSelect = $("#sponsor");
+const subjectLabel = $("#subject-label");
+const modeRadios = document.querySelectorAll('input[name="card-mode"]');
+const mentorBackdropSelect = $("#mentor-backdrop");
+const mentorPhotoSelect = $("#mentor-photo");
+const mentorVoiceSelect = $("#mentor-voice");
+const mentorTitleInput = $("#mentor-title");
+const mentorCompanyInput = $("#mentor-company");
+const mentorBackdropControl = $("#mentor-backdrop-control");
+const mentorPhotoControl = $("#mentor-photo-control");
+const mentorVoiceControl = $("#mentor-voice-control");
+const mentorTitleControl = $("#mentor-title-control");
+const mentorCompanyControl = $("#mentor-company-control");
 const langRadios = document.querySelectorAll('input[name="lang"]');
 const headlineInput = $("#headline");
 const previewStage = $("#preview-stage");
@@ -21,9 +35,11 @@ const exportButtons = document.querySelectorAll(
 
 const SIDEBAR_STORAGE_KEY = "sv-social-sidebar-open";
 const SHELL_THEME_STORAGE_KEY = "sv-social-shell-theme";
+const CARD_MODE_STORAGE_KEY = "sv-social-card-mode";
 const DESKTOP_MQ = window.matchMedia("(min-width: 1024px)");
 
 const LANGS = ["en", "es"];
+const MENTOR_FORMATS = new Set(["linkedin", "x"]);
 
 /** Sentinel for the "all sponsors" wall — not a member of SPONSORS. */
 const ALL_SPONSOR = { id: "all", name: "All sponsors", isAll: true };
@@ -39,6 +55,15 @@ const FORMAT_FOLDERS = {
 
 let currentFormat = "story";
 let exportBusy = false;
+let cardMode = "sponsors";
+
+function isMentorMode() {
+  return cardMode === "mentors";
+}
+
+function getSubjects() {
+  return isMentorMode() ? MENTORS : SPONSORS;
+}
 
 function setStatus(msg, isError = false) {
   statusEl.textContent = msg;
@@ -79,30 +104,163 @@ function setExportBusy(busy, progress = {}) {
   setExportProgress({ busy, ...progress });
 }
 
-function populateSponsors() {
-  const sorted = [...SPONSORS].sort((a, b) =>
+function populateSubjects() {
+  const subjects = getSubjects();
+  const previous = sponsorSelect.value;
+  const sorted = [...subjects].sort((a, b) =>
     a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
   );
 
-  const allOpt = document.createElement("option");
-  allOpt.value = ALL_SPONSOR.id;
-  allOpt.textContent = "All sponsors";
-  sponsorSelect.appendChild(allOpt);
+  sponsorSelect.innerHTML = "";
 
-  for (const s of sorted) {
+  if (!isMentorMode()) {
+    const allOpt = document.createElement("option");
+    allOpt.value = ALL_SPONSOR.id;
+    allOpt.textContent = "All sponsors";
+    sponsorSelect.appendChild(allOpt);
+  }
+
+  for (const subject of sorted) {
     const opt = document.createElement("option");
-    opt.value = s.id;
-    opt.textContent = s.name;
+    opt.value = subject.id;
+    opt.textContent = subject.name;
     sponsorSelect.appendChild(opt);
   }
+
+  if (
+    previous &&
+    [...sponsorSelect.options].some((opt) => opt.value === previous)
+  ) {
+    sponsorSelect.value = previous;
+  } else if (sponsorSelect.options.length > 0) {
+    sponsorSelect.selectedIndex = 0;
+  }
+
+  if (isMentorMode()) {
+    populateMentorPhotoOptions();
+    syncMentorControlsToCurrent();
+  }
+}
+
+function populateMentorPhotoOptions() {
+  if (!mentorPhotoSelect) return;
+
+  mentorPhotoSelect.innerHTML = "";
+  for (const photo of Object.values(MENTOR_PHOTOS)) {
+    const opt = document.createElement("option");
+    opt.value = photo.id;
+    opt.textContent = photo.label;
+    mentorPhotoSelect.appendChild(opt);
+  }
+}
+
+function populateSponsors() {
+  populateSubjects();
 }
 
 function updateSponsorCount() {
   const countEl = $("#sponsor-count");
   if (!countEl) return;
 
-  const count = SPONSORS.length;
-  countEl.textContent = `${count} sponsor${count === 1 ? "" : "s"}`;
+  const count = getSubjects().length;
+  const noun = isMentorMode() ? "mentor" : "sponsor";
+  countEl.textContent = `${count} ${noun}${count === 1 ? "" : "s"}`;
+}
+
+function updateSubjectLabel() {
+  if (!subjectLabel) return;
+  subjectLabel.textContent = isMentorMode() ? "Mentor" : "Sponsor";
+}
+
+function updateModeUi() {
+  updateSubjectLabel();
+  updateSponsorCount();
+  updateHeadlinePlaceholder();
+  populateSubjects();
+  populateMentorControls();
+  syncMentorControlsToCurrent();
+  toggleMentorControls();
+  updateFormatTabsForMode();
+  ensureValidFormatForMode();
+  if (previewAnimLink) {
+    previewAnimLink.hidden = isMentorMode();
+  }
+  document.title = isMentorMode()
+    ? "Cursor Buildathon SV · Mentor Social Cards"
+    : "Cursor Buildathon SV · Sponsor Social Cards";
+  const titleEl = $(".sidebar__title");
+  if (titleEl) {
+    titleEl.textContent = isMentorMode() ? "Mentor social cards" : "Sponsor social cards";
+  }
+  const exportAllBtn = $("#export-all");
+  if (exportAllBtn) {
+    exportAllBtn.textContent = isMentorMode()
+      ? "All mentors — ZIP (this format)"
+      : "All sponsors — ZIP (this format)";
+  }
+}
+
+function populateMentorControls() {
+  if (!mentorBackdropSelect || !mentorPhotoSelect) return;
+
+  mentorBackdropSelect.innerHTML = "";
+  for (const backdrop of Object.values(MENTOR_BACKDROPS)) {
+    const opt = document.createElement("option");
+    opt.value = backdrop.id;
+    opt.textContent = backdrop.label;
+    mentorBackdropSelect.appendChild(opt);
+  }
+
+  if (isMentorMode()) populateMentorPhotoOptions();
+}
+
+function toggleMentorControls() {
+  const show = isMentorMode();
+  if (mentorBackdropControl) mentorBackdropControl.hidden = true;
+  if (mentorPhotoControl) mentorPhotoControl.hidden = !show;
+  if (mentorVoiceControl) mentorVoiceControl.hidden = !show;
+  if (mentorTitleControl) mentorTitleControl.hidden = !show;
+  if (mentorCompanyControl) mentorCompanyControl.hidden = !show;
+}
+
+function updateFormatTabsForMode() {
+  formatTabs.forEach((tab) => {
+    const visible = !isMentorMode() || MENTOR_FORMATS.has(tab.dataset.format);
+    tab.hidden = !visible;
+  });
+}
+
+function ensureValidFormatForMode() {
+  if (!isMentorMode() || MENTOR_FORMATS.has(currentFormat)) return;
+  const linkedinTab = [...formatTabs].find((t) => t.dataset.format === "linkedin");
+  if (linkedinTab) selectFormatTab(linkedinTab);
+}
+
+function defaultPhotoIdForMentor(mentor) {
+  if (!mentor?.photo) return "monogram";
+  const match = Object.values(MENTOR_PHOTOS).find((p) => p.file === mentor.photo);
+  return match?.id ?? "monogram";
+}
+
+function syncMentorControlsToCurrent() {
+  if (!isMentorMode() || !mentorBackdropSelect || !mentorPhotoSelect) return;
+  const mentor = getCurrent();
+  mentorBackdropSelect.value = mentor.backdrop ?? "surf";
+  mentorPhotoSelect.value = defaultPhotoIdForMentor(mentor);
+  if (mentorVoiceSelect) {
+    mentorVoiceSelect.value = mentor.voice === "joining" ? "joining" : "mentoring";
+  }
+  if (mentorTitleInput) mentorTitleInput.value = mentor.title ?? "";
+  if (mentorCompanyInput) mentorCompanyInput.value = mentor.company ?? "";
+}
+
+function getMentorVoice() {
+  if (mentorVoiceSelect?.value === "joining") return "joining";
+  return "mentoring";
+}
+
+function getMentorPhotoId() {
+  return mentorPhotoSelect?.value || defaultPhotoIdForMentor(getCurrent());
 }
 
 function preloadLogos() {
@@ -110,11 +268,30 @@ function preloadLogos() {
     const img = new Image();
     img.src = `sponsors/${s.logo}`;
   }
+  for (const m of MENTORS) {
+    if (m.photo) {
+      const img = new Image();
+      img.src = `assets/${m.photo}`;
+    }
+  }
+  for (const photo of Object.values(MENTOR_PHOTOS)) {
+    if (photo.file) {
+      const img = new Image();
+      img.src = `assets/${photo.file}`;
+    }
+  }
+}
+
+function getCurrent() {
+  if (isMentorMode()) {
+    return MENTORS.find((m) => m.id === sponsorSelect.value) ?? MENTORS[0];
+  }
+  if (sponsorSelect.value === ALL_SPONSOR.id) return ALL_SPONSOR;
+  return SPONSORS.find((s) => s.id === sponsorSelect.value) ?? SPONSORS[0];
 }
 
 function getSponsor() {
-  if (sponsorSelect.value === ALL_SPONSOR.id) return ALL_SPONSOR;
-  return SPONSORS.find((s) => s.id === sponsorSelect.value) ?? SPONSORS[0];
+  return getCurrent();
 }
 
 function getLang() {
@@ -126,12 +303,55 @@ function getLandmark() {
   return "volcano";
 }
 
-function pngFilename(sponsor, format, lang) {
-  return `buildathon-sv-${sponsor.id}-${format}-${lang}.png`;
+function pngFilename(subject, format, lang) {
+  if (isMentorMode()) {
+    return `buildathon-sv-mentor-${subject.id}-${format}-${lang}.png`;
+  }
+  return `buildathon-sv-${subject.id}-${format}-${lang}.png`;
+}
+
+function mentorForCard(subject, { forPreview = false } = {}) {
+  const isCurrentPreview = forPreview && subject.id === getCurrent()?.id;
+  if (!isCurrentPreview) {
+    return {
+      ...subject,
+      voice: subject.voice === "joining" ? "joining" : "mentoring",
+    };
+  }
+
+  return {
+    ...subject,
+    voice: getMentorVoice(),
+    title: mentorTitleInput?.value.trim() || subject.title,
+    company: mentorCompanyInput?.value.trim() || subject.company,
+  };
+}
+
+function buildCardForSubject({ subject, format, lang, forPreview = false }) {
+  if (isMentorMode()) {
+    const mentor = mentorForCard(subject, { forPreview });
+    const isCurrentPreview = forPreview && subject.id === getCurrent()?.id;
+    return buildMentorCardHtml({
+      mentor,
+      format,
+      lang,
+      headlineOverride: isCurrentPreview ? headlineInput.value : "",
+      photoId: isCurrentPreview ? getMentorPhotoId() : undefined,
+    });
+  }
+  return buildCardHtml({
+    sponsor: subject,
+    format,
+    lang,
+    headlineOverride: headlineInput.value,
+    landmark: getLandmark(),
+    isAll: subject?.isAll === true,
+  });
 }
 
 function updateHeadlinePlaceholder() {
-  headlineInput.placeholder = COPY[getLang()].context;
+  const copy = isMentorMode() ? MENTOR_COPY[getLang()] : COPY[getLang()];
+  headlineInput.placeholder = copy.context;
 }
 
 function scalePreview() {
@@ -147,15 +367,13 @@ function scalePreview() {
 }
 
 function renderPreview() {
-  const sponsor = getSponsor();
+  const subject = getCurrent();
   const lang = getLang();
-  const html = buildCardHtml({
-    sponsor,
+  const html = buildCardForSubject({
+    subject,
     format: currentFormat,
     lang,
-    headlineOverride: headlineInput.value,
-    landmark: getLandmark(),
-    isAll: sponsor.isAll === true,
+    forPreview: true,
   });
 
   previewScaler.innerHTML = html;
@@ -166,8 +384,9 @@ function renderPreview() {
 }
 
 function updateAnimLink() {
+  if (isMentorMode()) return;
   const params = new URLSearchParams({
-    sponsor: getSponsor().id,
+    sponsor: getCurrent().id,
     lang: getLang(),
     landmark: getLandmark(),
   });
@@ -175,9 +394,11 @@ function updateAnimLink() {
 }
 
 async function waitForImages(root) {
-  const imgs = [...root.querySelectorAll("img")];
+  const required = [...root.querySelectorAll("img:not([data-optional])")];
+  const optional = [...root.querySelectorAll("img[data-optional]")];
+
   await Promise.all(
-    imgs.map(
+    required.map(
       (img) =>
         new Promise((resolve, reject) => {
           if (img.complete && img.naturalWidth) {
@@ -189,16 +410,31 @@ async function waitForImages(root) {
         }),
     ),
   );
+
+  await Promise.all(
+    optional.map(
+      (img) =>
+        new Promise((resolve) => {
+          if (img.complete && img.naturalWidth) {
+            resolve();
+            return;
+          }
+          img.onload = () => resolve();
+          img.onerror = () => {
+            img.style.display = "none";
+            resolve();
+          };
+        }),
+    ),
+  );
 }
 
-async function renderCardBlob({ sponsor, format, lang }) {
-  exportRoot.innerHTML = buildCardHtml({
-    sponsor,
+async function renderCardBlob({ subject, format, lang, forPreview = false }) {
+  exportRoot.innerHTML = buildCardForSubject({
+    subject,
     format,
     lang,
-    headlineOverride: headlineInput.value,
-    landmark: getLandmark(),
-    isAll: sponsor?.isAll === true,
+    forPreview,
   });
 
   await waitForImages(exportRoot);
@@ -243,11 +479,12 @@ async function exportPng({ batch = false } = {}) {
   try {
     await document.fonts.ready;
     const blob = await renderCardBlob({
-      sponsor: getSponsor(),
+      subject: getCurrent(),
       format: currentFormat,
       lang: getLang(),
+      forPreview: isMentorMode(),
     });
-    downloadBlob(blob, pngFilename(getSponsor(), currentFormat, getLang()));
+    downloadBlob(blob, pngFilename(getCurrent(), currentFormat, getLang()));
     setStatus("PNG downloaded.");
   } catch (err) {
     console.error(err);
@@ -269,7 +506,8 @@ async function exportZipPack(formats) {
   }
   if (exportBusy) return;
 
-  const total = formats.length * SPONSORS.length * LANGS.length;
+  const subjects = getSubjects();
+  const total = formats.length * subjects.length * LANGS.length;
   let done = 0;
 
   setExportBusy(true, { done: 0, total });
@@ -286,10 +524,10 @@ async function exportZipPack(formats) {
       const enFolder = folder.folder("en");
       const esFolder = folder.folder("es");
 
-      for (const sponsor of SPONSORS) {
+      for (const subject of subjects) {
         for (const lang of LANGS) {
-          const blob = await renderCardBlob({ sponsor, format, lang });
-          const filename = pngFilename(sponsor, format, lang);
+          const blob = await renderCardBlob({ subject, format, lang });
+          const filename = pngFilename(subject, format, lang);
 
           folder.file(filename, blob);
           if (lang === "en") enFolder.file(filename, blob);
@@ -488,7 +726,32 @@ function initZipButtons() {
   });
 }
 
+function setCardMode(mode) {
+  cardMode = mode === "mentors" ? "mentors" : "sponsors";
+  localStorage.setItem(CARD_MODE_STORAGE_KEY, cardMode);
+  modeRadios.forEach((radio) => {
+    radio.checked = radio.value === cardMode;
+  });
+  updateModeUi();
+  renderPreview();
+}
+
+function initCardMode() {
+  const stored = localStorage.getItem(CARD_MODE_STORAGE_KEY);
+  if (stored === "mentors" || stored === "sponsors") {
+    cardMode = stored;
+  }
+  modeRadios.forEach((radio) => {
+    radio.checked = radio.value === cardMode;
+    radio.addEventListener("change", () => {
+      if (radio.checked) setCardMode(radio.value);
+    });
+  });
+  updateModeUi();
+}
+
 function init() {
+  initCardMode();
   populateSponsors();
   updateSponsorCount();
   preloadLogos();
@@ -498,9 +761,19 @@ function init() {
   initSidebar();
   initFormatTabs();
   initZipButtons();
+  if (isMentorMode() && MENTORS.length === 0) {
+    setStatus("No mentors loaded — check data/mentors/", true);
+  }
   renderPreview();
 
-  sponsorSelect.addEventListener("change", renderPreview);
+  sponsorSelect.addEventListener("change", () => {
+    if (isMentorMode()) syncMentorControlsToCurrent();
+    renderPreview();
+  });
+  mentorPhotoSelect?.addEventListener("change", onMentorPhotoChanged);
+  mentorVoiceSelect?.addEventListener("change", renderPreview);
+  mentorTitleInput?.addEventListener("input", renderPreview);
+  mentorCompanyInput?.addEventListener("input", renderPreview);
   langRadios.forEach((radio) => {
     radio.addEventListener("change", () => {
       updateHeadlinePlaceholder();
@@ -514,4 +787,28 @@ function init() {
   $("#export-all").addEventListener("click", () => exportPng({ batch: true }));
 }
 
-init();
+function onMentorPhotoChanged() {
+  const photoId = mentorPhotoSelect?.value;
+
+  if (photoId && photoId !== "monogram" && isMentorMode()) {
+    const mentor = MENTORS.find((m) => m.id === photoId);
+    if (mentor && sponsorSelect.value !== photoId) {
+      sponsorSelect.value = photoId;
+      syncMentorControlsToCurrent();
+    }
+  }
+
+  renderPreview();
+}
+
+async function boot() {
+  try {
+    await loadMentors();
+  } catch (err) {
+    console.error(err);
+    setStatus(`Mentor data error: ${err.message}`, true);
+  }
+  init();
+}
+
+boot();

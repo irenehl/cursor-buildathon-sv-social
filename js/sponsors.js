@@ -45,12 +45,12 @@ export const COPY = {
     poweredBy: "Powered by",
     pubBadge: "Cursor Buildathon · 2026",
     // Headline reads as one sentence: "{sponsor} {pubStatement}".
-    pubStatement: "is building Cursor Buildathon with us in El Salvador.",
+    pubStatement: "has joined Cursor Buildathon El Salvador.",
     pubContext: "24 hours building with AI · Jul 4–5 · UFG, San Salvador.",
     // "All sponsors" wall variant.
     allEyebrow: "Our sponsors",
-    allTitle: "Thank you to all our sponsors",
-    allContext: "Powering the 24-hour Cursor Buildathon in El Salvador.",
+    allTitle: "Thanks to our sponsors",
+    allContext: "Backing the 24-hour Cursor Buildathon in El Salvador.",
   },
   es: {
     thanks: "Gracias a nuestro sponsor",
@@ -60,12 +60,12 @@ export const COPY = {
     venue: "UFG · San Salvador",
     poweredBy: "Powered by",
     pubBadge: "Cursor Buildathon · 2026",
-    pubStatement: "está construyendo Cursor Buildathon con nosotros en El Salvador.",
+    pubStatement: "se ha unido a Cursor Buildathon El Salvador.",
     pubContext: "24 horas construyendo con IA · 4–5 jul · UFG, San Salvador.",
     // Variante muro "todos los patrocinadores".
     allEyebrow: "Nuestros patrocinadores",
-    allTitle: "Gracias a todos nuestros patrocinadores",
-    allContext: "Impulsando el Cursor Buildathon de 24 horas en El Salvador.",
+    allTitle: "Gracias a nuestros patrocinadores",
+    allContext: "Apoyando el Cursor Buildathon de 24 horas en El Salvador.",
   },
 };
 
