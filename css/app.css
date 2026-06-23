@@ -325,6 +325,10 @@ body {
   margin-bottom: var(--shell-gap);
 }
 
+.sidebar__section > fieldset.control + .actions {
+  margin-top: var(--shell-gap);
+}
+
 /* Main content */
 .app-main {
   flex: 1;

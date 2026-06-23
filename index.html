@@ -206,6 +206,19 @@
 
           <section class="sidebar__section" aria-labelledby="section-export">
             <h2 class="sidebar__section-title" id="section-export">Export</h2>
+            <fieldset class="control control--full">
+              <legend class="control__legend">Resolution</legend>
+              <div class="lang-radios">
+                <label class="lang-radio">
+                  <input type="radio" name="export-scale" id="scale-2x" value="2" checked />
+                  <span class="lang-radio__text">2×</span>
+                </label>
+                <label class="lang-radio">
+                  <input type="radio" name="export-scale" id="scale-3x" value="3" />
+                  <span class="lang-radio__text">3×</span>
+                </label>
+              </div>
+            </fieldset>
             <div class="actions">
               <button type="button" class="btn btn--primary btn--block" id="export-one">
                 Download PNG

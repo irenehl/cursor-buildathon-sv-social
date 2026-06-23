@@ -36,6 +36,7 @@ const exportButtons = document.querySelectorAll(
 const SIDEBAR_STORAGE_KEY = "sv-social-sidebar-open";
 const SHELL_THEME_STORAGE_KEY = "sv-social-shell-theme";
 const CARD_MODE_STORAGE_KEY = "sv-social-card-mode";
+const EXPORT_SCALE_STORAGE_KEY = "sv-social-export-scale";
 const DESKTOP_MQ = window.matchMedia("(min-width: 1024px)");
 
 const LANGS = ["en", "es"];
@@ -303,11 +304,17 @@ function getLandmark() {
   return "volcano";
 }
 
-function pngFilename(subject, format, lang) {
+function getExportScale() {
+  const checked = document.querySelector('input[name="export-scale"]:checked');
+  return Number(checked?.value) === 3 ? 3 : 2;
+}
+
+function pngFilename(subject, format, lang, scale = getExportScale()) {
+  const scaleTag = `@${scale}x`;
   if (isMentorMode()) {
-    return `buildathon-sv-mentor-${subject.id}-${format}-${lang}.png`;
+    return `buildathon-sv-mentor-${subject.id}-${format}-${lang}${scaleTag}.png`;
   }
-  return `buildathon-sv-${subject.id}-${format}-${lang}.png`;
+  return `buildathon-sv-${subject.id}-${format}-${lang}${scaleTag}.png`;
 }
 
 function mentorForCard(subject, { forPreview = false } = {}) {
@@ -429,7 +436,7 @@ async function waitForImages(root) {
   );
 }
 
-async function renderCardBlob({ subject, format, lang, forPreview = false }) {
+async function renderCardBlob({ subject, format, lang, forPreview = false, pixelRatio = getExportScale() }) {
   exportRoot.innerHTML = buildCardForSubject({
     subject,
     format,
@@ -445,7 +452,7 @@ async function renderCardBlob({ subject, format, lang, forPreview = false }) {
   const blob = await htmlToImage.toBlob(card, {
     width: w,
     height: h,
-    pixelRatio: 2,
+    pixelRatio,
     cacheBust: true,
     backgroundColor: "#080808",
   });
@@ -484,8 +491,9 @@ async function exportPng({ batch = false } = {}) {
       lang: getLang(),
       forPreview: isMentorMode(),
     });
-    downloadBlob(blob, pngFilename(getCurrent(), currentFormat, getLang()));
-    setStatus("PNG downloaded.");
+    const scale = getExportScale();
+    downloadBlob(blob, pngFilename(getCurrent(), currentFormat, getLang(), scale));
+    setStatus(`PNG downloaded (${scale}×).`);
   } catch (err) {
     console.error(err);
     setStatus(`Export failed: ${err.message}`, true);
@@ -726,6 +734,18 @@ function initZipButtons() {
   });
 }
 
+function initExportScale() {
+  const stored = localStorage.getItem(EXPORT_SCALE_STORAGE_KEY);
+  const scaleInput = stored === "3" ? $("#scale-3x") : $("#scale-2x");
+  if (scaleInput) scaleInput.checked = true;
+
+  document.querySelectorAll('input[name="export-scale"]').forEach((radio) => {
+    radio.addEventListener("change", () => {
+      localStorage.setItem(EXPORT_SCALE_STORAGE_KEY, String(getExportScale()));
+    });
+  });
+}
+
 function setCardMode(mode) {
   cardMode = mode === "mentors" ? "mentors" : "sponsors";
   localStorage.setItem(CARD_MODE_STORAGE_KEY, cardMode);
@@ -761,6 +781,7 @@ function init() {
   initSidebar();
   initFormatTabs();
   initZipButtons();
+  initExportScale();
   if (isMentorMode() && MENTORS.length === 0) {
     setStatus("No mentors loaded — check data/mentors/", true);
   }
