@@ -5,13 +5,13 @@ import {
   mentorDisplayName,
   mentorInitials,
   mentorPhotoFile,
-  mentorPubLead,
   resolveMentorBackdrop,
 } from "./mentors.js";
 import { cardBackdrop, landmarkLayer } from "./sv-backdrop.js";
 
 const HOST_LOGO = "sponsors/cursor-dark.svg";
 const AILABS_LOGO = "sponsors/ailabs.svg";
+const MENTOR_BADGE = "MENTOR";
 
 export const TIER1_SPONSOR_IDS = [
   "codex",
@@ -614,6 +614,7 @@ function buildFeedInner({ copy, sponsorLabel, context, logoSrc, meta, footer }) 
  * @param {'en'|'es'} opts.lang
  * @param {string} [opts.headlineOverride]
  * @param {string} [opts.photoId]
+ * @param {'classic'|'film'} [opts.design] Card design variant.
  */
 export function buildMentorCardHtml({
   mentor,
@@ -621,6 +622,7 @@ export function buildMentorCardHtml({
   lang,
   headlineOverride,
   photoId,
+  design = "classic",
 }) {
   const copy = MENTOR_COPY[lang];
   const { w, h } = FORMATS[format];
@@ -635,9 +637,23 @@ export function buildMentorCardHtml({
   const footer = buildMentorFooter(copy, format);
   const topBar = buildTopBar();
 
+  // The film-print design only changes the 1:1 publication formats; every
+  // other format keeps the classic layout so nothing else regresses.
+  const useFilm = design === "film" && (format === "linkedin" || format === "x");
+
   let inner = "";
 
-  if (format === "banner" || format === "linkedin-banner") {
+  if (useFilm) {
+    inner = buildMentorFilmInner({
+      copy,
+      mentor: mentorForRender,
+      mentorLabel,
+      meta,
+      powered,
+      footer,
+      topBar,
+    });
+  } else if (format === "banner" || format === "linkedin-banner") {
     inner = buildMentorBannerInner({
       copy,
       mentor: mentorForRender,
@@ -673,10 +689,11 @@ export function buildMentorCardHtml({
 
   return `
 <article
-  class="social-card social-card--mentor"
+  class="social-card social-card--mentor${useFilm ? " social-card--film" : ""}"
   data-format="${format}"
   data-mentor="${escapeHtml(mentor.id)}"
   data-backdrop="${escapeHtml(backdrop.id)}"
+  data-design="${useFilm ? "film" : "classic"}"
   style="--frame-w: ${w}px; --frame-h: ${h}px;"
   aria-label="${escapeHtml(mentorLabel)} — Cursor Buildathon mentor, El Salvador"
 >
@@ -855,7 +872,6 @@ function buildMentorBannerInner({ copy, mentor, mentorLabel, context, meta, powe
 }
 
 function buildMentorPublicationInner({ copy, mentor, mentorLabel, meta, powered, footer, topBar }) {
-  const pubLead = mentorPubLead(copy, mentor);
   const role = mentor.role?.trim();
   const title = mentor.title?.trim();
   const company = mentor.company?.trim();
@@ -891,14 +907,11 @@ function buildMentorPublicationInner({ copy, mentor, mentorLabel, meta, powered,
     ${topBar}
     <main class="social-card__mpub">
       <div class="social-card__mpub-text">
-        <span class="social-card__pub-badge">${escapeHtml(copy.pubBadge)}</span>
+        <span class="social-card__pub-badge">${escapeHtml(MENTOR_BADGE)}</span>
         <div class="social-card__mpub-id">
           <p class="social-card__mpub-name">${escapeHtml(mentorLabel)}</p>
           ${credLine}
         </div>
-        <h1 class="social-card__mpub-statement">
-          ${escapeHtml(pubLead)}<span class="social-card__mpub-event">${escapeHtml(copy.pubEvent)}</span> <span class="social-card__mpub-place">${escapeHtml(copy.pubPlace)}</span>
-        </h1>
         <div class="social-card__pub-grow" aria-hidden="true"></div>
         ${meta}
         ${powered}
@@ -906,6 +919,73 @@ function buildMentorPublicationInner({ copy, mentor, mentorLabel, meta, powered,
       ${photo}
     </main>
     ${footer}`;
+}
+
+/**
+ * "Revelado" film-print design — frames a candid, full-frame photo as a
+ * developed instant print instead of a floating cut-out. Built for the
+ * rectangular event snapshots that the classic cut-out layout can't crop well.
+ */
+function buildMentorFilmInner({ copy, mentor, mentorLabel, meta, powered, footer, topBar }) {
+  const role = mentor.role?.trim();
+  const title = mentor.title?.trim();
+  const company = mentor.company?.trim();
+
+  const credLine =
+    title || company
+      ? `<p class="social-card__mpub-cred">${
+          title ? `<span class="social-card__mpub-title">${escapeHtml(title)}</span>` : ""
+        }${
+          title && company ? `<span class="social-card__mpub-at"> at </span>` : ""
+        }${
+          company ? `<span class="social-card__mpub-company">${escapeHtml(company)}</span>` : ""
+        }</p>`
+      : role
+        ? `<p class="social-card__mpub-cred"><span class="social-card__mpub-title">${escapeHtml(role)}</span></p>`
+        : "";
+
+  const handleLine = mentor.handle
+    ? `<p class="social-card__film-handle">${escapeHtml(mentor.handle)}</p>`
+    : "";
+
+  return `
+    ${topBar}
+    <main class="social-card__film">
+      <div class="social-card__film-head">
+        <span class="social-card__pub-badge">${escapeHtml(MENTOR_BADGE)}</span>
+        <p class="social-card__film-name">${escapeHtml(mentorLabel)}</p>
+        ${credLine}
+        ${handleLine}
+      </div>
+      ${mentorFilmPrintHtml(mentor, mentorLabel)}
+      <div class="social-card__film-foot">
+        ${meta}
+        ${powered}
+      </div>
+    </main>
+    ${footer}`;
+}
+
+function mentorFilmPrintHtml(mentor, name) {
+  const initials = mentorInitials(mentor);
+
+  const media = mentor.photo
+    ? `<img
+          class="social-card__film-img"
+          src="assets/${escapeHtml(mentor.photo)}"
+          alt="${escapeHtml(name)}"
+          crossorigin="anonymous"
+          data-optional="true"
+        />
+        <span class="social-card__film-fallback" aria-hidden="true">${escapeHtml(initials)}</span>`
+    : `<span class="social-card__film-fallback social-card__film-fallback--solo">${escapeHtml(initials)}</span>`;
+
+  return `
+    <div class="social-card__film-print" role="img" aria-label="${escapeHtml(name)}">
+      <div class="social-card__film-window">
+        ${media}
+      </div>
+    </div>`;
 }
 
 function escapeHtml(text) {

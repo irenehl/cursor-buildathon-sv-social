@@ -13,6 +13,8 @@ const mentorPhotoSelect = $("#mentor-photo");
 const mentorVoiceSelect = $("#mentor-voice");
 const mentorTitleInput = $("#mentor-title");
 const mentorCompanyInput = $("#mentor-company");
+const mentorDesignSelect = $("#mentor-design");
+const mentorDesignControl = $("#mentor-design-control");
 const mentorBackdropControl = $("#mentor-backdrop-control");
 const mentorPhotoControl = $("#mentor-photo-control");
 const mentorVoiceControl = $("#mentor-voice-control");
@@ -36,6 +38,7 @@ const exportButtons = document.querySelectorAll(
 const SIDEBAR_STORAGE_KEY = "sv-social-sidebar-open";
 const SHELL_THEME_STORAGE_KEY = "sv-social-shell-theme";
 const CARD_MODE_STORAGE_KEY = "sv-social-card-mode";
+const MENTOR_DESIGN_STORAGE_KEY = "sv-social-mentor-design";
 const EXPORT_SCALE_STORAGE_KEY = "sv-social-export-scale";
 const DESKTOP_MQ = window.matchMedia("(min-width: 1024px)");
 
@@ -218,10 +221,15 @@ function populateMentorControls() {
 function toggleMentorControls() {
   const show = isMentorMode();
   if (mentorBackdropControl) mentorBackdropControl.hidden = true;
+  if (mentorDesignControl) mentorDesignControl.hidden = !show;
   if (mentorPhotoControl) mentorPhotoControl.hidden = !show;
   if (mentorVoiceControl) mentorVoiceControl.hidden = !show;
   if (mentorTitleControl) mentorTitleControl.hidden = !show;
   if (mentorCompanyControl) mentorCompanyControl.hidden = !show;
+}
+
+function getMentorDesign() {
+  return mentorDesignSelect?.value === "film" ? "film" : "classic";
 }
 
 function updateFormatTabsForMode() {
@@ -361,6 +369,7 @@ function buildCardForSubject({ subject, format, lang, forPreview = false }) {
       lang,
       headlineOverride: isCurrentPreview ? headlineInput.value : "",
       photoId: isCurrentPreview ? getMentorPhotoId() : undefined,
+      design: getMentorDesign(),
     });
   }
   return buildCardHtml({
@@ -815,6 +824,12 @@ function init() {
   initFormatTabs();
   initZipButtons();
   initExportScale();
+  if (mentorDesignSelect) {
+    const storedDesign = localStorage.getItem(MENTOR_DESIGN_STORAGE_KEY);
+    if (storedDesign === "film" || storedDesign === "classic") {
+      mentorDesignSelect.value = storedDesign;
+    }
+  }
   if (isMentorMode() && MENTORS.length === 0) {
     setStatus("No mentors loaded — check data/mentors/", true);
   }
@@ -822,6 +837,10 @@ function init() {
 
   sponsorSelect.addEventListener("change", () => {
     if (isMentorMode()) syncMentorControlsToCurrent();
+    renderPreview();
+  });
+  mentorDesignSelect?.addEventListener("change", () => {
+    localStorage.setItem(MENTOR_DESIGN_STORAGE_KEY, getMentorDesign());
     renderPreview();
   });
   mentorPhotoSelect?.addEventListener("change", onMentorPhotoChanged);

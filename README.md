@@ -117,6 +117,15 @@ Edit `js/sponsors.js`:
 
 Toggle **Mentors** in the sidebar to switch to personal first-person cards (LinkedIn / X). Default headline voice: **I'm mentoring at…** or **I'm joining…**.
 
+### Card design (Classic vs Film print)
+
+Use the **Card design** dropdown in the sidebar to choose how the photo is framed:
+
+- **Classic — studio cut-out:** the original layout. Best for clean, transparent-background headshots that float against the backdrop.
+- **Film print — candid photos:** frames the photo as a developed instant print (warm paper border, grain, slight tilt) resting on the dark studio surface. Built for **rectangular, full-frame candid event snapshots** that the cut-out layout crops badly. All event chrome (MENTOR badge, dates, 24H, venue, sponsor wall, powered-by) is preserved. Applies to the LinkedIn / X (1:1) mentor formats.
+
+The choice is saved locally and applies to single PNG and ZIP exports.
+
 ### Mentor data (Markdown)
 
 Mentors load at runtime from `data/mentors/` — no JS edits needed to add someone new.

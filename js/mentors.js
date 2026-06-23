@@ -90,10 +90,6 @@ export function mentorInitials(mentor) {
   return (parts[0]?.[0] ?? "?").toUpperCase();
 }
 
-export function mentorPubLead(copy, mentor) {
-  return mentor?.voice === "joining" ? copy.pubLeadJoining : copy.pubLeadMentoring;
-}
-
 export const MENTOR_FOOTER_SPONSOR_IDS = [
   "codex",
   "elevenlabs",
@@ -116,11 +112,7 @@ export const MENTOR_COPY = {
     venue: "UFG · San Salvador",
     poweredBy: "Powered by",
     sponsorsLabel: "Sponsors",
-    pubBadge: "Cursor Buildathon · 2026",
-    pubLeadMentoring: "I'm mentoring at ",
-    pubLeadJoining: "I'm joining ",
-    pubEvent: "Cursor Buildathon",
-    pubPlace: "El Salvador.",
+    pubBadge: "MENTOR",
     pubContext: "24 hours building with AI · Jul 4–5 · UFG, San Salvador.",
   },
   es: {
@@ -131,11 +123,7 @@ export const MENTOR_COPY = {
     venue: "UFG · San Salvador",
     poweredBy: "Powered by",
     sponsorsLabel: "Sponsors",
-    pubBadge: "Cursor Buildathon · 2026",
-    pubLeadMentoring: "Soy mentor en ",
-    pubLeadJoining: "Me uno a ",
-    pubEvent: "Cursor Buildathon",
-    pubPlace: "El Salvador.",
+    pubBadge: "MENTOR",
     pubContext: "24 horas construyendo con IA · 4–5 jul · UFG, San Salvador.",
   },
 };
