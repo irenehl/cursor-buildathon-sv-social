@@ -309,6 +309,23 @@ function getExportScale() {
   return Number(checked?.value) === 3 ? 3 : 2;
 }
 
+function exportDimensions(format, scale = getExportScale()) {
+  const { w, h } = FORMATS[format];
+  return { w: w * scale, h: h * scale };
+}
+
+function exportSupportsZoom() {
+  return "zoom" in document.documentElement.style;
+}
+
+function updateExportScaleLabels() {
+  const { w, h } = FORMATS[currentFormat];
+  for (const scale of [2, 3]) {
+    const text = document.querySelector(`#scale-${scale}x + .lang-radio__text`);
+    if (text) text.textContent = `${scale}× · ${w * scale}×${h * scale}`;
+  }
+}
+
 function pngFilename(subject, format, lang, scale = getExportScale()) {
   const scaleTag = `@${scale}x`;
   if (isMentorMode()) {
@@ -386,6 +403,7 @@ function renderPreview() {
   previewScaler.innerHTML = html;
   previewLabel.textContent = FORMATS[currentFormat].label;
 
+  updateExportScaleLabels();
   updateAnimLink();
   requestAnimationFrame(scalePreview);
 }
@@ -436,7 +454,7 @@ async function waitForImages(root) {
   );
 }
 
-async function renderCardBlob({ subject, format, lang, forPreview = false, pixelRatio = getExportScale() }) {
+async function renderCardBlob({ subject, format, lang, forPreview = false, scale = getExportScale() }) {
   exportRoot.innerHTML = buildCardForSubject({
     subject,
     format,
@@ -448,17 +466,30 @@ async function renderCardBlob({ subject, format, lang, forPreview = false, pixel
 
   const card = exportRoot.querySelector(".social-card");
   const { w, h } = FORMATS[format];
+  const outW = w * scale;
+  const outH = h * scale;
+  const useZoom = exportSupportsZoom();
 
-  const blob = await htmlToImage.toBlob(card, {
-    width: w,
-    height: h,
-    pixelRatio,
-    cacheBust: true,
-    backgroundColor: "#080808",
-  });
+  exportRoot.style.width = `${outW}px`;
+  exportRoot.style.height = `${outH}px`;
+  if (useZoom) card.style.zoom = String(scale);
 
-  if (!blob) throw new Error("PNG export failed");
-  return blob;
+  try {
+    const blob = await htmlToImage.toBlob(card, {
+      width: useZoom ? outW : w,
+      height: useZoom ? outH : h,
+      pixelRatio: useZoom ? 1 : scale,
+      cacheBust: true,
+      backgroundColor: "#080808",
+    });
+
+    if (!blob) throw new Error("PNG export failed");
+    return blob;
+  } finally {
+    card.style.zoom = "";
+    exportRoot.style.width = "";
+    exportRoot.style.height = "";
+  }
 }
 
 function downloadBlob(blob, filename) {
@@ -492,8 +523,9 @@ async function exportPng({ batch = false } = {}) {
       forPreview: isMentorMode(),
     });
     const scale = getExportScale();
+    const { w: outW, h: outH } = exportDimensions(currentFormat, scale);
     downloadBlob(blob, pngFilename(getCurrent(), currentFormat, getLang(), scale));
-    setStatus(`PNG downloaded (${scale}×).`);
+    setStatus(`PNG downloaded (${scale}× · ${outW}×${outH}).`);
   } catch (err) {
     console.error(err);
     setStatus(`Export failed: ${err.message}`, true);
@@ -738,6 +770,7 @@ function initExportScale() {
   const stored = localStorage.getItem(EXPORT_SCALE_STORAGE_KEY);
   const scaleInput = stored === "3" ? $("#scale-3x") : $("#scale-2x");
   if (scaleInput) scaleInput.checked = true;
+  updateExportScaleLabels();
 
   document.querySelectorAll('input[name="export-scale"]').forEach((radio) => {
     radio.addEventListener("change", () => {
