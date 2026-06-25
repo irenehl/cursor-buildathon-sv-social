@@ -14,7 +14,11 @@ const mentorVoiceSelect = $("#mentor-voice");
 const mentorTitleInput = $("#mentor-title");
 const mentorCompanyInput = $("#mentor-company");
 const mentorDesignSelect = $("#mentor-design");
+const mentorZipLayoutSelect = $("#mentor-zip-layout");
 const mentorDesignControl = $("#mentor-design-control");
+const mentorZipLayoutControl = $("#mentor-zip-layout-control");
+const batchDisclosureSummary = $("#batch-disclosure-summary");
+const batchDisclosureDesc = $("#batch-disclosure-desc");
 const mentorBackdropControl = $("#mentor-backdrop-control");
 const mentorPhotoControl = $("#mentor-photo-control");
 const mentorVoiceControl = $("#mentor-voice-control");
@@ -39,6 +43,7 @@ const SIDEBAR_STORAGE_KEY = "sv-social-sidebar-open";
 const SHELL_THEME_STORAGE_KEY = "sv-social-shell-theme";
 const CARD_MODE_STORAGE_KEY = "sv-social-card-mode";
 const MENTOR_DESIGN_STORAGE_KEY = "sv-social-mentor-design";
+const MENTOR_ZIP_LAYOUT_STORAGE_KEY = "sv-social-mentor-zip-layout";
 const EXPORT_SCALE_STORAGE_KEY = "sv-social-export-scale";
 const DESKTOP_MQ = window.matchMedia("(min-width: 1024px)");
 
@@ -202,6 +207,33 @@ function updateModeUi() {
       ? "All mentors — ZIP (this format)"
       : "All sponsors — ZIP (this format)";
   }
+
+  if (batchDisclosureSummary) {
+    batchDisclosureSummary.textContent = isMentorMode()
+      ? "Bulk ZIP downloads (all mentors)"
+      : "Bulk ZIP downloads (all sponsors)";
+  }
+
+  if (batchDisclosureDesc) {
+    if (isMentorMode() && getMentorZipLayout() === "mentor") {
+      batchDisclosureDesc.innerHTML =
+        'One download — unzip to get a folder per mentor (e.g. <code>Daniela Huezo/</code>) with ' +
+        "<code>linkedin/</code> and <code>x/</code> inside, each with EN + ES PNGs. " +
+        'Switch <strong>Bulk ZIP layout</strong> above to group by format instead.';
+    } else if (isMentorMode()) {
+      batchDisclosureDesc.innerHTML =
+        "One download — unzip to get <code>linkedin/</code> and <code>x/</code> with every mentor " +
+        "plus <code>en/</code> and <code>es/</code> subfolders. Choose " +
+        '<strong>By mentor</strong> in <strong>Bulk ZIP layout</strong> to get one folder per person.';
+    } else {
+      batchDisclosureDesc.innerHTML =
+        "One download — unzip to get <code>linkedin/</code>, <code>x/</code>, " +
+        "<code>banner/</code>, <code>instagram-post/</code>, or " +
+        "<code>instagram-story/</code> with every sponsor plus <code>en/</code> and " +
+        "<code>es/</code> subfolders. For a real folder on disk without unzipping, run " +
+        "<code>node scripts/export-pngs.mjs</code> (see README).";
+    }
+  }
 }
 
 function populateMentorControls() {
@@ -222,10 +254,36 @@ function toggleMentorControls() {
   const show = isMentorMode();
   if (mentorBackdropControl) mentorBackdropControl.hidden = true;
   if (mentorDesignControl) mentorDesignControl.hidden = !show;
+  if (mentorZipLayoutControl) mentorZipLayoutControl.hidden = !show;
   if (mentorPhotoControl) mentorPhotoControl.hidden = !show;
   if (mentorVoiceControl) mentorVoiceControl.hidden = !show;
   if (mentorTitleControl) mentorTitleControl.hidden = !show;
   if (mentorCompanyControl) mentorCompanyControl.hidden = !show;
+}
+
+function getMentorZipLayout() {
+  return mentorZipLayoutSelect?.value === "mentor" ? "mentor" : "format";
+}
+
+function mentorZipFolderName(mentor, usedNames) {
+  let base = mentor.name
+    .trim()
+    .replace(/[/\\:*?"<>|]/g, "-")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!base) base = mentor.id;
+
+  let folder = base;
+  if (usedNames.has(folder)) {
+    folder = `${base} (${mentor.id})`;
+  }
+  usedNames.add(folder);
+  return folder;
+}
+
+function addPngToLangFolders(parentFolder, filename, blob, lang) {
+  parentFolder.file(filename, blob);
+  parentFolder.folder(lang).file(filename, blob);
 }
 
 function getMentorDesign() {
@@ -556,6 +614,7 @@ async function exportZipPack(formats) {
   if (exportBusy) return;
 
   const subjects = getSubjects();
+  const byMentor = isMentorMode() && getMentorZipLayout() === "mentor";
   const total = formats.length * subjects.length * LANGS.length;
   let done = 0;
 
@@ -567,37 +626,64 @@ async function exportZipPack(formats) {
 
     const zip = new JSZip();
 
-    for (const format of formats) {
-      const folderName = FORMAT_FOLDERS[format];
-      const folder = zip.folder(folderName);
-      const enFolder = folder.folder("en");
-      const esFolder = folder.folder("es");
+    if (byMentor) {
+      const usedNames = new Set();
 
       for (const subject of subjects) {
-        for (const lang of LANGS) {
-          const blob = await renderCardBlob({ subject, format, lang });
-          const filename = pngFilename(subject, format, lang);
+        const mentorFolder = zip.folder(mentorZipFolderName(subject, usedNames));
 
-          folder.file(filename, blob);
-          if (lang === "en") enFolder.file(filename, blob);
-          else esFolder.file(filename, blob);
+        for (const format of formats) {
+          const formatFolder = mentorFolder.folder(FORMAT_FOLDERS[format]);
 
-          done += 1;
-          setExportBusy(true, { done, total });
-          setStatus(`Building ZIP… ${done} / ${total}`);
+          for (const lang of LANGS) {
+            const blob = await renderCardBlob({ subject, format, lang });
+            const filename = pngFilename(subject, format, lang);
+            addPngToLangFolders(formatFolder, filename, blob, lang);
+
+            done += 1;
+            setExportBusy(true, { done, total });
+            setStatus(`Building ZIP… ${done} / ${total}`);
+          }
+        }
+      }
+    } else {
+      for (const format of formats) {
+        const formatFolder = zip.folder(FORMAT_FOLDERS[format]);
+
+        for (const subject of subjects) {
+          for (const lang of LANGS) {
+            const blob = await renderCardBlob({ subject, format, lang });
+            const filename = pngFilename(subject, format, lang);
+            addPngToLangFolders(formatFolder, filename, blob, lang);
+
+            done += 1;
+            setExportBusy(true, { done, total });
+            setStatus(`Building ZIP… ${done} / ${total}`);
+          }
         }
       }
     }
 
     const zipBlob = await zip.generateAsync({ type: "blob" });
     const stamp = new Date().toISOString().slice(0, 10);
-    const zipName =
-      formats.length === 1
-        ? `buildathon-sv-${FORMAT_FOLDERS[formats[0]]}-${stamp}.zip`
-        : `buildathon-sv-social-${stamp}.zip`;
+    const zipName = byMentor
+      ? formats.length === 1
+        ? `buildathon-sv-mentors-${FORMAT_FOLDERS[formats[0]]}-${stamp}.zip`
+        : `buildathon-sv-mentors-by-name-${stamp}.zip`
+      : formats.length === 1
+        ? isMentorMode()
+          ? `buildathon-sv-mentors-${FORMAT_FOLDERS[formats[0]]}-${stamp}.zip`
+          : `buildathon-sv-${FORMAT_FOLDERS[formats[0]]}-${stamp}.zip`
+        : isMentorMode()
+          ? `buildathon-sv-mentors-${stamp}.zip`
+          : `buildathon-sv-social-${stamp}.zip`;
+
+    const layoutLabel = byMentor
+      ? `${subjects.length} mentor folder${subjects.length === 1 ? "" : "s"}`
+      : `${formats.length} format folder${formats.length > 1 ? "s" : ""}`;
 
     downloadBlob(zipBlob, zipName);
-    setStatus(`Done — ${zipName} (${total} PNGs in ${formats.length} folder${formats.length > 1 ? "s" : ""}).`);
+    setStatus(`Done — ${zipName} (${total} PNGs · ${layoutLabel}).`);
   } catch (err) {
     console.error(err);
     setStatus(`ZIP export failed: ${err.message}`, true);
@@ -812,7 +898,16 @@ function initCardMode() {
   updateModeUi();
 }
 
+function initMentorZipLayout() {
+  if (!mentorZipLayoutSelect) return;
+  const storedLayout = localStorage.getItem(MENTOR_ZIP_LAYOUT_STORAGE_KEY);
+  if (storedLayout === "mentor" || storedLayout === "format") {
+    mentorZipLayoutSelect.value = storedLayout;
+  }
+}
+
 function init() {
+  initMentorZipLayout();
   initCardMode();
   populateSponsors();
   updateSponsorCount();
@@ -842,6 +937,10 @@ function init() {
   mentorDesignSelect?.addEventListener("change", () => {
     localStorage.setItem(MENTOR_DESIGN_STORAGE_KEY, getMentorDesign());
     renderPreview();
+  });
+  mentorZipLayoutSelect?.addEventListener("change", () => {
+    localStorage.setItem(MENTOR_ZIP_LAYOUT_STORAGE_KEY, getMentorZipLayout());
+    updateModeUi();
   });
   mentorPhotoSelect?.addEventListener("change", onMentorPhotoChanged);
   mentorVoiceSelect?.addEventListener("change", renderPreview);

@@ -226,6 +226,13 @@
                 </label>
               </div>
             </fieldset>
+            <div class="control control--full mentor-only" id="mentor-zip-layout-control" hidden>
+              <label for="mentor-zip-layout">Bulk ZIP layout</label>
+              <select id="mentor-zip-layout">
+                <option value="format">By format — linkedin/, x/, …</option>
+                <option value="mentor" selected>By mentor — one folder per person</option>
+              </select>
+            </div>
             <div class="actions">
               <button type="button" class="btn btn--primary btn--block" id="export-one">
                 Download PNG
@@ -247,8 +254,10 @@
 
           <section class="sidebar__section">
             <details class="batch-disclosure">
-              <summary class="batch-disclosure__summary">Bulk ZIP downloads (all sponsors)</summary>
-              <p class="batch-disclosure__desc">
+              <summary class="batch-disclosure__summary" id="batch-disclosure-summary">
+                Bulk ZIP downloads (all sponsors)
+              </summary>
+              <p class="batch-disclosure__desc" id="batch-disclosure-desc">
                 One download — unzip to get <code>linkedin/</code>, <code>x/</code>,
                 <code>banner/</code>, <code>instagram-post/</code>, or
                 <code>instagram-story/</code> with every sponsor plus <code>en/</code> and
