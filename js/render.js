@@ -13,12 +13,23 @@ const HOST_LOGO = "sponsors/cursor-dark.svg";
 const AILABS_LOGO = "sponsors/ailabs.svg";
 const MENTOR_BADGE = "MENTOR";
 
+/** Absolute URL for assets — html-to-image resolves mask/background urls against css/. */
+function resolveAssetUrl(path) {
+  if (!path || typeof document === "undefined") return path;
+  try {
+    return new URL(path, document.baseURI).href;
+  } catch {
+    return path;
+  }
+}
+
 export const TIER1_SPONSOR_IDS = [
   "codex",
   "elevenlabs",
   "n8n",
   "zavu",
   "firecrawl",
+  "supabase",
 ];
 
 export const TIER2_SPONSOR_IDS = [
@@ -63,6 +74,8 @@ const LOGO_AR = {
   "gad-dev": 3.39,
   mistral: 4.42,
   ufg: 1.76,
+  supabase: 5.14,
+  ieee: 3.27,
 };
 
 const WALL_PAD_X = {
@@ -231,6 +244,40 @@ function footerSponsorCells(format, frameW) {
       const label = sponsorDisplayName(sponsor);
       const w = Math.max(1, Math.floor(baseWidths[i] * fit));
       return `<div class="social-card__foot-sponsor" role="img" aria-label="${escapeHtml(label)}" style="width: ${w}px; height: ${h}px; background-image: url('sponsors/${sponsor.logo}')"></div>`;
+    })
+    .join("");
+}
+
+/**
+ * Story sponsor grid — sizes each logo by equal optical area so wide wordmarks
+ * and tall marks read at a balanced weight, then lets them wrap into ~2 tidy
+ * rows. Unlike the cramped single-row footer, these stay large and legible on
+ * a clean dark panel.
+ */
+function mentorStorySponsorCells() {
+  const sponsors = MENTOR_FOOTER_SPONSOR_IDS.map((id) =>
+    SPONSORS.find((s) => s.id === id),
+  ).filter(Boolean);
+  if (sponsors.length === 0) return "";
+
+  const AREA = 5200;
+  const H_MIN = 30;
+  const H_MAX = 52;
+  const W_MAX = 184;
+
+  return sponsors
+    .map((sponsor) => {
+      const label = sponsorDisplayName(sponsor);
+      const ar = LOGO_AR[sponsor.id] || 3;
+      let h = Math.sqrt(AREA / ar);
+      let w = h * ar;
+      if (w > W_MAX) {
+        w = W_MAX;
+        h = w / ar;
+      }
+      h = Math.min(H_MAX, Math.max(H_MIN, h));
+      w = Math.min(W_MAX, Math.round(h * ar));
+      return `<div class="social-card__mstory-sponsor" role="img" aria-label="${escapeHtml(label)}" style="width: ${w}px; height: ${Math.round(h)}px; background-image: url('sponsors/${sponsor.logo}')"></div>`;
     })
     .join("");
 }
@@ -415,11 +462,8 @@ function buildAllCardHtml({ format, lang, headlineOverride, landmark }) {
   const land = LANDMARKS[landmark] || LANDMARKS[DEFAULT_LANDMARK];
 
   const topBar = `
-    <header class="social-card__top">
-      <div class="social-card__top-brand">
-        <img class="social-card__host-mark" src="${HOST_LOGO}" alt="Cursor" crossorigin="anonymous" />
-        <span class="social-card__brand">Buildathon · 2026</span>
-      </div>
+    <header class="social-card__top social-card__top--wall">
+      <span class="social-card__brand social-card__brand--wall">Cursor Buildathon · 2026</span>
       <span class="social-card__top-place">El Salvador</span>
     </header>`;
 
@@ -630,7 +674,12 @@ export function buildMentorCardHtml({
   const mentorLabel = mentorDisplayName(mentor);
   const backdrop = resolveMentorBackdrop("surf");
   const photoFile = mentorPhotoFile(mentor, photoId);
-  const mentorForRender = photoFile ? { ...mentor, photo: photoFile } : mentor;
+  const mentorForRender =
+    photoId === "monogram"
+      ? { ...mentor, photo: null }
+      : photoFile
+        ? { ...mentor, photo: photoFile }
+        : mentor;
 
   const meta = buildMetaBlock(copy);
   const powered = buildMentorPoweredBlock(copy);
@@ -643,7 +692,17 @@ export function buildMentorCardHtml({
 
   let inner = "";
 
-  if (useFilm) {
+  if (format === "story") {
+    inner = buildMentorStoryInner({
+      copy,
+      mentor: mentorForRender,
+      mentorLabel,
+      meta,
+      powered,
+      footer,
+      topBar,
+    });
+  } else if (useFilm) {
     inner = buildMentorFilmInner({
       copy,
       mentor: mentorForRender,
@@ -744,17 +803,20 @@ function mentorPrintDefs() {
   return `
   <svg class="social-card__print-defs" width="0" height="0" aria-hidden="true" focusable="false">
     <filter id="mentor-print" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
-      <feColorMatrix type="saturate" values="0.08" result="mono" />
-      <feComponentTransfer in="mono" result="ink">
-        <feFuncR type="linear" slope="1.25" intercept="-0.1" />
-        <feFuncG type="linear" slope="1.25" intercept="-0.1" />
-        <feFuncB type="linear" slope="1.25" intercept="-0.1" />
+      <!-- Full-color editorial grade: keep skin and clothes in color, just add
+           punch. Lift saturation, deepen contrast with a gentle S-curve, then
+           lay a faint film grain over the top for texture (not desaturation). -->
+      <feColorMatrix type="saturate" values="1.28" result="rich" />
+      <feComponentTransfer in="rich" result="graded">
+        <feFuncR type="table" tableValues="0.03 0.28 0.56 0.82 1" />
+        <feFuncG type="table" tableValues="0.03 0.27 0.55 0.81 1" />
+        <feFuncB type="table" tableValues="0.04 0.27 0.54 0.8 0.99" />
       </feComponentTransfer>
       <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="noise" />
       <feColorMatrix in="noise" type="matrix"
-        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0" result="grainAlpha" />
-      <feComposite in="grainAlpha" in2="ink" operator="in" result="grain" />
-      <feBlend in="ink" in2="grain" mode="overlay" />
+        values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.18 0" result="grainAlpha" />
+      <feComposite in="grainAlpha" in2="graded" operator="in" result="grain" />
+      <feBlend in="graded" in2="grain" mode="overlay" />
     </filter>
   </svg>`;
 }
@@ -889,12 +951,13 @@ function buildMentorPublicationInner({ copy, mentor, mentorLabel, meta, powered,
         ? `<p class="social-card__mpub-cred"><span class="social-card__mpub-title">${escapeHtml(role)}</span></p>`
         : "";
 
-  const photoSrc = mentor.photo ? `assets/${escapeHtml(mentor.photo)}` : "";
+  const photoPath = mentor.photo ? `assets/${escapeHtml(mentor.photo)}` : "";
+  const photoUrl = photoPath ? resolveAssetUrl(photoPath) : "";
   const photo = mentor.photo
-    ? `<div class="social-card__mpub-photo" style="--photo-src: url('${photoSrc}')">
+    ? `<div class="social-card__mpub-photo" style="--photo-src: url('${photoUrl}')">
         <img
           class="social-card__mpub-photo-img"
-          src="${photoSrc}"
+          src="${photoUrl}"
           alt="${escapeHtml(mentorLabel)}"
           crossorigin="anonymous"
           data-optional="true"
@@ -964,6 +1027,79 @@ function buildMentorFilmInner({ copy, mentor, mentorLabel, meta, powered, footer
       </div>
     </main>
     ${footer}`;
+}
+
+/**
+ * Vertical "dossier" story (9:16): full-bleed B&W portrait hero that fills the
+ * frame, magazine-style name lockup overlaid on the photo, a technical meta
+ * strip, and the El Salvador wave carrying the sponsors at the foot.
+ */
+function buildMentorStoryInner({ copy, mentor, mentorLabel, meta, powered, footer, topBar }) {
+  const role = mentor.role?.trim();
+  const title = mentor.title?.trim();
+  const company = mentor.company?.trim();
+  const initials = mentorInitials(mentor);
+
+  const credLine =
+    title || company
+      ? `<p class="social-card__mstory-cred">${
+          title ? `<span class="social-card__mstory-cred-title">${escapeHtml(title)}</span>` : ""
+        }${
+          title && company ? `<span class="social-card__mstory-cred-at"> at </span>` : ""
+        }${
+          company ? `<span class="social-card__mstory-cred-company">${escapeHtml(company)}</span>` : ""
+        }</p>`
+      : role
+        ? `<p class="social-card__mstory-cred"><span class="social-card__mstory-cred-title">${escapeHtml(role)}</span></p>`
+        : "";
+
+  const media = mentor.photo
+    ? `<img
+          class="social-card__mstory-img"
+          src="assets/${escapeHtml(mentor.photo)}"
+          alt="${escapeHtml(mentorLabel)}"
+          crossorigin="anonymous"
+          data-optional="true"
+        />
+        <span class="social-card__mstory-fallback" aria-hidden="true">${escapeHtml(initials)}</span>`
+    : `<span class="social-card__mstory-fallback social-card__mstory-fallback--solo">${escapeHtml(initials)}</span>`;
+
+  const sponsorCells = mentorStorySponsorCells();
+  const sponsorsBlock = sponsorCells
+    ? `
+        <div class="social-card__mstory-sponsors">
+          <span class="social-card__mstory-sponsors-label">${escapeHtml(copy.sponsorsLabel)}</span>
+          <div class="social-card__mstory-sponsors-grid">${sponsorCells}</div>
+        </div>`
+    : "";
+
+  return `
+    ${topBar}
+    <main class="social-card__mstory">
+      <figure class="social-card__mstory-hero">
+        ${media}
+        <div class="social-card__mstory-scrim" aria-hidden="true"></div>
+        <figcaption class="social-card__mstory-id">
+          <span class="social-card__mstory-badge">${escapeHtml(MENTOR_BADGE)}</span>
+          <p class="social-card__mstory-name">${escapeHtml(mentorLabel)}</p>
+          ${credLine}
+        </figcaption>
+      </figure>
+      <section class="social-card__mstory-info">
+        <div class="social-card__mstory-meta">
+          <span>${escapeHtml(copy.date)}</span>
+          <span class="social-card__mstory-meta-sep">·</span>
+          <span class="social-card__mstory-meta-hot">24H</span>
+          <span class="social-card__mstory-meta-sep">·</span>
+          <span>${escapeHtml(copy.venue)}</span>
+        </div>
+        ${sponsorsBlock}
+        <div class="social-card__mstory-powered">
+          <span class="social-card__mstory-powered-label">${escapeHtml(copy.poweredBy)}</span>
+          <div class="social-card__mstory-powered-logo" role="img" aria-label="Ai /abs" style="background-image: url('${AILABS_LOGO}')"></div>
+        </div>
+      </section>
+    </main>`;
 }
 
 function mentorFilmPrintHtml(mentor, name) {

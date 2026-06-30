@@ -32,6 +32,8 @@ export const SPONSORS = [
   { id: "gad-dev", name: "GAD Dev", displayName: "GAD Dev", logo: "gad-dev.svg" },
   { id: "mistral", name: "Mistral", displayName: "Mistral", logo: "mistral.svg" },
   { id: "ufg", name: "UFG", displayName: "UFG", logo: "ufg-dark.svg" },
+  { id: "supabase", name: "Supabase", displayName: "Supabase", logo: "supabase.svg" },
+  { id: "ieee", name: "IEEE", displayName: "IEEE", logo: "ieee.webp" },
 ];
 
 export function sponsorDisplayName(sponsor) {

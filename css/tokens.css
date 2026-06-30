@@ -1,3 +1,5 @@
+@import "./fonts.css";
+
 :root {
   /* Cursor Buildathon SV — matches landing page */
   --bg: #080808;
@@ -19,5 +21,18 @@
   --sv-white: #ffffff;
 
   --font-display: "Chakra Petch", sans-serif;
-  --font-mono: "JetBrains Mono", monospace;
+  --card-display: "Chakra Petch", var(--font-display), sans-serif;
+}
+
+/* Chakra Petch Bold — all text */
+html {
+  font-family: var(--card-display);
+  font-weight: 700;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: inherit;
+  font-weight: inherit;
 }

@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/app.css" />
@@ -17,6 +17,11 @@
         if (t === "light" || t === "dark") {
           document.documentElement.setAttribute("data-shell-theme", t);
         }
+        var mode = localStorage.getItem("sv-social-card-mode");
+        document.documentElement.setAttribute(
+          "data-card-mode",
+          mode === "mentors" ? "mentors" : "sponsors",
+        );
       })();
     </script>
   </head>
@@ -150,7 +155,7 @@
 
           <section class="sidebar__section" aria-labelledby="section-format">
             <h2 class="sidebar__section-title" id="section-format">Format</h2>
-            <div class="format-tabs" role="tablist" aria-label="Export format">
+            <div class="format-tabs" id="format-tabs" role="tablist" aria-label="Export format">
               <button
                 type="button"
                 class="format-tab is-active"
@@ -158,7 +163,7 @@
                 role="tab"
                 aria-selected="true"
                 aria-controls="preview-panel"
-                aria-label="Instagram Story"
+                aria-label="IG Story"
                 tabindex="0"
               >
                 IG Story
@@ -182,9 +187,10 @@
                 role="tab"
                 aria-selected="false"
                 aria-controls="preview-panel"
+                aria-label="X / LinkedIn / IG"
                 tabindex="-1"
               >
-                LinkedIn
+                X / LinkedIn / IG
               </button>
               <button
                 type="button"
@@ -226,16 +232,25 @@
                 </label>
               </div>
             </fieldset>
-            <div class="control control--full mentor-only" id="mentor-zip-layout-control" hidden>
-              <label for="mentor-zip-layout">Bulk ZIP layout</label>
-              <select id="mentor-zip-layout">
-                <option value="format">By format — linkedin/, x/, …</option>
-                <option value="mentor" selected>By mentor — one folder per person</option>
-              </select>
-            </div>
             <div class="actions">
               <button type="button" class="btn btn--primary btn--block" id="export-one">
                 Download PNG
+              </button>
+              <button
+                type="button"
+                class="btn btn--secondary btn--block mentor-only"
+                id="export-current-mentor"
+                hidden
+              >
+                This mentor — ZIP (both formats)
+              </button>
+              <button
+                type="button"
+                class="btn btn--secondary btn--block sponsor-only"
+                id="export-current-sponsor"
+                hidden
+              >
+                This sponsor — ZIP (all formats)
               </button>
               <a
                 class="btn btn--secondary btn--block"
@@ -258,11 +273,11 @@
                 Bulk ZIP downloads (all sponsors)
               </summary>
               <p class="batch-disclosure__desc" id="batch-disclosure-desc">
-                One download — unzip to get <code>linkedin/</code>, <code>x/</code>,
-                <code>banner/</code>, <code>instagram-post/</code>, or
-                <code>instagram-story/</code> with every sponsor plus <code>en/</code> and
-                <code>es/</code> subfolders. For a real folder on disk without unzipping, run
-                <code>node scripts/export-pngs.mjs</code> (see README).
+                One download — unzip to get a folder per sponsor (e.g.
+                <code>n8n/</code>) with PNG files for each format and language
+                (<code>story-en.png</code>, <code>story-es.png</code>, …). Includes an
+                <code>all/</code> folder for the sponsors wall. For a real folder on disk without
+                unzipping, run <code>node scripts/export-pngs.mjs</code> (see README).
               </p>
               <div class="batch-disclosure__actions">
                 <button type="button" class="btn btn--secondary" data-zip-formats="linkedin">
@@ -283,6 +298,7 @@
                 <button
                   type="button"
                   class="btn btn--primary"
+                  id="bulk-zip-everything"
                   data-zip-formats="story,post,linkedin,x,banner"
                 >
                   Everything

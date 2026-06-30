@@ -56,23 +56,24 @@ Flags: `--format linkedin|linkedin-banner|x|banner|post|story|all`, `--lang en|e
 Each pack downloads a single ZIP. Inside:
 
 ```
-linkedin/
-  buildathon-sv-codex-linkedin-en.png   ← all sponsors (EN + ES)
-  en/
-  es/
-linkedin-banner/
+n8n/
+  story-en.png
+  story-es.png
+  instagram-post-en.png
+  instagram-post-es.png
+  linkedin-en.png
+  linkedin-es.png
+  x-en.png
+  x-es.png
+  banner-en.png
+  banner-es.png
+codex/
   …
-x/
-  …
-banner/
-  …
-instagram-post/
-  …
-instagram-story/
-  …
+all/
+  …   ← sponsors wall
 ```
 
-Use **Everything** for one ZIP with all format folders.
+Use **Everything** for one ZIP with every sponsor folder plus `all/`.
 
 > A local server is required so logos load correctly for PNG export.
 
@@ -168,7 +169,10 @@ Per-backdrop cropping is tuned in `css/card.css` under `[data-backdrop="…"]`.
 - **El Salvador:** halftone backdrop of a real national symbol, selectable in the UI:
   - **Volcán Santa Ana** (`assets/sv-volcano.png`) — default, non-religious.
   - **Divino Salvador del Mundo** (`assets/sv-landmark.png`).
-- **Our colors only:** `#080808`, `#ff4b00`, off-white, Chakra Petch + JetBrains Mono.
+- **Our colors only:** `#080808`, `#ff4b00`, off-white.
+- **Typography:** **Chakra Petch Bold (700)** on all text — cards, editor, export. Google Fonts + local woff2 fallback.
+
+Applied on every surface: all sponsor + mentor card formats, all-sponsors wall, editor shell (`index.html`), PNG export frame (`export-frame.html`), and story animation (`story-anim.html`).
 
 ### Swapping the backdrop art
 

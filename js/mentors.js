@@ -80,6 +80,7 @@ export function resolveMentorPhoto(photoId) {
 }
 
 export function mentorPhotoFile(mentor, photoId) {
+  if (photoId === "monogram") return null;
   if (photoId) return resolveMentorPhoto(photoId);
   return mentor.photo ?? null;
 }

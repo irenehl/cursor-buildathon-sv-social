@@ -14,9 +14,8 @@ const mentorVoiceSelect = $("#mentor-voice");
 const mentorTitleInput = $("#mentor-title");
 const mentorCompanyInput = $("#mentor-company");
 const mentorDesignSelect = $("#mentor-design");
-const mentorZipLayoutSelect = $("#mentor-zip-layout");
 const mentorDesignControl = $("#mentor-design-control");
-const mentorZipLayoutControl = $("#mentor-zip-layout-control");
+const bulkZipEverythingBtn = $("#bulk-zip-everything");
 const batchDisclosureSummary = $("#batch-disclosure-summary");
 const batchDisclosureDesc = $("#batch-disclosure-desc");
 const mentorBackdropControl = $("#mentor-backdrop-control");
@@ -35,32 +34,46 @@ const formatTabs = document.querySelectorAll(".format-tab");
 const previewAnimLink = $("#preview-anim");
 const exportProgress = $("#export-progress");
 const exportProgressBar = $("#export-progress-bar");
+const exportCurrentMentorBtn = $("#export-current-mentor");
+const exportCurrentSponsorBtn = $("#export-current-sponsor");
 const exportButtons = document.querySelectorAll(
-  "#export-one, #export-all, .batch-disclosure__actions .btn",
+  "#export-one, #export-current-mentor, #export-current-sponsor, #export-all, .batch-disclosure__actions .btn",
 );
 
 const SIDEBAR_STORAGE_KEY = "sv-social-sidebar-open";
 const SHELL_THEME_STORAGE_KEY = "sv-social-shell-theme";
 const CARD_MODE_STORAGE_KEY = "sv-social-card-mode";
 const MENTOR_DESIGN_STORAGE_KEY = "sv-social-mentor-design";
-const MENTOR_ZIP_LAYOUT_STORAGE_KEY = "sv-social-mentor-zip-layout";
 const EXPORT_SCALE_STORAGE_KEY = "sv-social-export-scale";
 const DESKTOP_MQ = window.matchMedia("(min-width: 1024px)");
 
 const LANGS = ["en", "es"];
-const MENTOR_FORMATS = new Set(["linkedin", "x"]);
+const MENTOR_FORMATS = new Set(["story", "linkedin"]);
+
+const FORMAT_TAB_LABELS = {
+  story: { sponsor: "IG Story", mentor: "IG Story" },
+  linkedin: { sponsor: "LinkedIn", mentor: "X / LinkedIn / IG" },
+};
+
+const MENTOR_PUBLICATION_LABEL = "X / LinkedIn / IG · 1:1 · 1080×1080";
+const MENTOR_ZIP_LANG = "en";
+const MENTOR_ZIP_FILES = {
+  linkedin: "linkedin-x-ig.png",
+  story: "story.png",
+};
+
+const SPONSOR_FORMATS = new Set(["story", "post", "linkedin", "x", "banner"]);
+const SPONSOR_ZIP_FORMATS = ["story", "post", "linkedin", "x", "banner"];
+const SPONSOR_ZIP_FILES = {
+  story: "story",
+  post: "instagram-post",
+  linkedin: "linkedin",
+  x: "x",
+  banner: "banner",
+};
 
 /** Sentinel for the "all sponsors" wall — not a member of SPONSORS. */
 const ALL_SPONSOR = { id: "all", name: "All sponsors", isAll: true };
-
-const FORMAT_FOLDERS = {
-  linkedin: "linkedin",
-  "linkedin-banner": "linkedin-banner",
-  x: "x",
-  banner: "banner",
-  post: "instagram-post",
-  story: "instagram-story",
-};
 
 let currentFormat = "story";
 let exportBusy = false;
@@ -182,6 +195,7 @@ function updateSubjectLabel() {
 }
 
 function updateModeUi() {
+  syncCardModeAttribute();
   updateSubjectLabel();
   updateSponsorCount();
   updateHeadlinePlaceholder();
@@ -215,25 +229,23 @@ function updateModeUi() {
   }
 
   if (batchDisclosureDesc) {
-    if (isMentorMode() && getMentorZipLayout() === "mentor") {
+    if (isMentorMode()) {
       batchDisclosureDesc.innerHTML =
-        'One download — unzip to get a folder per mentor (e.g. <code>Daniela Huezo/</code>) with ' +
-        "<code>linkedin/</code> and <code>x/</code> inside, each with EN + ES PNGs. " +
-        'Switch <strong>Bulk ZIP layout</strong> above to group by format instead.';
-    } else if (isMentorMode()) {
-      batchDisclosureDesc.innerHTML =
-        "One download — unzip to get <code>linkedin/</code> and <code>x/</code> with every mentor " +
-        "plus <code>en/</code> and <code>es/</code> subfolders. Choose " +
-        '<strong>By mentor</strong> in <strong>Bulk ZIP layout</strong> to get one folder per person.';
+        'One download — unzip to get a folder per mentor (e.g. <code>andre-mendez/</code>) with ' +
+        "<code>linkedin-x-ig.png</code> (1080×1080 for LinkedIn, X, and IG Post) and " +
+        "<code>story.png</code> (1080×1920 IG Story). English only — no language subfolders.";
     } else {
       batchDisclosureDesc.innerHTML =
-        "One download — unzip to get <code>linkedin/</code>, <code>x/</code>, " +
-        "<code>banner/</code>, <code>instagram-post/</code>, or " +
-        "<code>instagram-story/</code> with every sponsor plus <code>en/</code> and " +
-        "<code>es/</code> subfolders. For a real folder on disk without unzipping, run " +
+        'One download — unzip to get a folder per sponsor (e.g. <code>n8n/</code>) with ' +
+        "PNG files for each format and language (<code>story-en.png</code>, " +
+        "<code>story-es.png</code>, …). Includes an <code>all/</code> folder for the " +
+        "sponsors wall. For a real folder on disk without unzipping, run " +
         "<code>node scripts/export-pngs.mjs</code> (see README).";
     }
   }
+
+  updateBulkZipButtonsForMode();
+  updateExportButtonsForMode();
 }
 
 function populateMentorControls() {
@@ -254,47 +266,130 @@ function toggleMentorControls() {
   const show = isMentorMode();
   if (mentorBackdropControl) mentorBackdropControl.hidden = true;
   if (mentorDesignControl) mentorDesignControl.hidden = !show;
-  if (mentorZipLayoutControl) mentorZipLayoutControl.hidden = !show;
   if (mentorPhotoControl) mentorPhotoControl.hidden = !show;
   if (mentorVoiceControl) mentorVoiceControl.hidden = !show;
   if (mentorTitleControl) mentorTitleControl.hidden = !show;
   if (mentorCompanyControl) mentorCompanyControl.hidden = !show;
 }
 
-function getMentorZipLayout() {
-  return mentorZipLayoutSelect?.value === "mentor" ? "mentor" : "format";
+function mentorZipFilename(format) {
+  return MENTOR_ZIP_FILES[format] ?? `${format}.png`;
 }
 
-function mentorZipFolderName(mentor, usedNames) {
-  let base = mentor.name
-    .trim()
-    .replace(/[/\\:*?"<>|]/g, "-")
-    .replace(/\s+/g, " ")
-    .trim();
-  if (!base) base = mentor.id;
-
-  let folder = base;
-  if (usedNames.has(folder)) {
-    folder = `${base} (${mentor.id})`;
+function mentorZipName(formats, stamp, { subjectId } = {}) {
+  if (subjectId) {
+    return `buildathon-sv-mentor-${subjectId}-${stamp}.zip`;
   }
-  usedNames.add(folder);
-  return folder;
+  if (formats.length === 1) {
+    const fileStem = mentorZipFilename(formats[0]).replace(/\.png$/, "");
+    return `buildathon-sv-mentors-${fileStem}-${stamp}.zip`;
+  }
+  return `buildathon-sv-mentors-${stamp}.zip`;
 }
 
-function addPngToLangFolders(parentFolder, filename, blob, lang) {
-  parentFolder.file(filename, blob);
-  parentFolder.folder(lang).file(filename, blob);
+function sponsorZipFilename(format, lang) {
+  const stem = SPONSOR_ZIP_FILES[format] ?? format;
+  return `${stem}-${lang}.png`;
+}
+
+function sponsorZipName(formats, stamp, { subjectId } = {}) {
+  if (subjectId) {
+    return `buildathon-sv-sponsor-${subjectId}-${stamp}.zip`;
+  }
+  if (formats.length === 1) {
+    const fileStem = SPONSOR_ZIP_FILES[formats[0]] ?? formats[0];
+    return `buildathon-sv-sponsors-${fileStem}-${stamp}.zip`;
+  }
+  return `buildathon-sv-sponsors-${stamp}.zip`;
+}
+
+function sponsorZipSubjects(subjects) {
+  return subjects ?? [...SPONSORS, ALL_SPONSOR];
+}
+
+function syncCardModeAttribute() {
+  document.documentElement.setAttribute("data-card-mode", cardMode);
+}
+
+function updateExportButtonsForMode() {
+  const mentorMode = isMentorMode();
+  if (exportCurrentMentorBtn) {
+    exportCurrentMentorBtn.hidden = !mentorMode;
+    if (mentorMode) {
+      const mentor = getCurrent();
+      exportCurrentMentorBtn.textContent = mentor?.name
+        ? `${mentor.name} — ZIP (both formats)`
+        : "This mentor — ZIP (both formats)";
+    }
+  }
+  if (exportCurrentSponsorBtn) {
+    exportCurrentSponsorBtn.hidden = mentorMode;
+    if (!mentorMode) {
+      const sponsor = getCurrent();
+      exportCurrentSponsorBtn.textContent = sponsor?.isAll
+        ? "All sponsors — ZIP (all formats)"
+        : sponsor?.name
+          ? `${sponsor.name} — ZIP (all formats)`
+          : "This sponsor — ZIP (all formats)";
+    }
+  }
+}
+
+function updateBulkZipButtonsForMode() {
+  const mentorMode = isMentorMode();
+  const linkedinBtn = document.querySelector('[data-zip-formats="linkedin"]');
+  const storyBtn = document.querySelector('[data-zip-formats="story"]');
+
+  document
+    .querySelectorAll('[data-zip-formats="x"], [data-zip-formats="banner"], [data-zip-formats="post"]')
+    .forEach((btn) => {
+      btn.hidden = mentorMode;
+    });
+
+  if (linkedinBtn) {
+    linkedinBtn.textContent = mentorMode ? "Social (LinkedIn / X / IG)" : "LinkedIn";
+  }
+  if (storyBtn) {
+    storyBtn.textContent = "Instagram Story";
+  }
+  if (bulkZipEverythingBtn) {
+    bulkZipEverythingBtn.dataset.zipFormats = mentorMode
+      ? "story,linkedin"
+      : "story,post,linkedin,x,banner";
+  }
 }
 
 function getMentorDesign() {
   return mentorDesignSelect?.value === "film" ? "film" : "classic";
 }
 
+function formatTabLabel(format) {
+  const labels = FORMAT_TAB_LABELS[format];
+  if (!labels) return null;
+  return isMentorMode() ? labels.mentor : labels.sponsor;
+}
+
+function visibleFormatTabs() {
+  return [...formatTabs].filter((tab) => !tab.hidden);
+}
+
 function updateFormatTabsForMode() {
+  const mentorMode = isMentorMode();
   formatTabs.forEach((tab) => {
-    const visible = !isMentorMode() || MENTOR_FORMATS.has(tab.dataset.format);
+    const format = tab.dataset.format;
+    const visible = !mentorMode || MENTOR_FORMATS.has(format);
     tab.hidden = !visible;
+
+    const label = formatTabLabel(format);
+    if (label) {
+      tab.textContent = label;
+      tab.setAttribute("aria-label", label);
+    } else if (format === "post") {
+      tab.setAttribute("aria-label", "Instagram Post");
+    }
   });
+
+  $("#format-tabs")?.classList.toggle("format-tabs--duo", mentorMode);
 }
 
 function ensureValidFormatForMode() {
@@ -468,7 +563,10 @@ function renderPreview() {
   });
 
   previewScaler.innerHTML = html;
-  previewLabel.textContent = FORMATS[currentFormat].label;
+  previewLabel.textContent =
+    isMentorMode() && currentFormat === "linkedin"
+      ? MENTOR_PUBLICATION_LABEL
+      : FORMATS[currentFormat].label;
 
   updateExportScaleLabels();
   updateAnimLink();
@@ -483,6 +581,62 @@ function updateAnimLink() {
     landmark: getLandmark(),
   });
   previewAnimLink.href = `story-anim.html?${params.toString()}`;
+}
+
+function exportErrorMessage(err) {
+  if (!err) return "PNG export failed (often a missing or blocked image)";
+  if (typeof err === "string") return err;
+  return err.message || String(err);
+}
+
+/**
+ * Embed the web fonts as data URIs once, then reuse across every export.
+ *
+ * Without this, html-to-image inlines each element's *computed* pixel height
+ * while rendering text with a system fallback font. The wider fallback rewraps
+ * a name like "André Mendez" onto two lines that overflow the one-line box, so
+ * it collides with the role below. Embedding the real font keeps export metrics
+ * identical to the preview. Cached so bulk ZIP runs don't refetch per card.
+ */
+let fontEmbedCssPromise = null;
+async function getFontEmbedCss(node) {
+  if (typeof htmlToImage?.getFontEmbedCSS !== "function") return null;
+  if (!fontEmbedCssPromise) {
+    fontEmbedCssPromise = htmlToImage.getFontEmbedCSS(node).catch((err) => {
+      console.warn("Font embedding failed; exporting with system fonts.", err);
+      fontEmbedCssPromise = null;
+      return null;
+    });
+  }
+  return fontEmbedCssPromise;
+}
+
+/** html-to-image resolves url() in mask/background against css/ — use absolute paths. */
+function prepareCardForExport(card) {
+  if (!card) throw new Error("Card markup missing — refresh and try again");
+
+  card.querySelectorAll("img[src]").forEach((img) => {
+    const raw = img.getAttribute("src");
+    if (raw && !raw.startsWith("data:") && !/^https?:/i.test(raw)) {
+      img.src = new URL(raw, document.baseURI).href;
+    }
+  });
+
+  card.querySelectorAll("[style]").forEach((el) => {
+    const style = el.getAttribute("style");
+    if (!style?.includes("url(")) return;
+    el.setAttribute(
+      "style",
+      style.replace(/url\(['"]?([^'")]+)['"]?\)/g, (match, path) => {
+        if (!path || path.startsWith("data:") || /^https?:/i.test(path)) return match;
+        try {
+          return `url('${new URL(path, document.baseURI).href}')`;
+        } catch {
+          return match;
+        }
+      }),
+    );
+  });
 }
 
 async function waitForImages(root) {
@@ -532,6 +686,8 @@ async function renderCardBlob({ subject, format, lang, forPreview = false, scale
   await waitForImages(exportRoot);
 
   const card = exportRoot.querySelector(".social-card");
+  if (!card) throw new Error("Card markup missing — refresh and try again");
+
   const { w, h } = FORMATS[format];
   const outW = w * scale;
   const outH = h * scale;
@@ -541,13 +697,21 @@ async function renderCardBlob({ subject, format, lang, forPreview = false, scale
   exportRoot.style.height = `${outH}px`;
   if (useZoom) card.style.zoom = String(scale);
 
+  prepareCardForExport(card);
+
+  const fontEmbedCSS = await getFontEmbedCss(card);
+
   try {
     const blob = await htmlToImage.toBlob(card, {
       width: useZoom ? outW : w,
       height: useZoom ? outH : h,
       pixelRatio: useZoom ? 1 : scale,
       cacheBust: true,
+      // Fonts are self-hosted (same-origin), so embedding is reliable. Use the
+      // precomputed CSS when available; otherwise let html-to-image embed them.
+      ...(fontEmbedCSS ? { fontEmbedCSS } : {}),
       backgroundColor: "#080808",
+      onImageErrorHandler: () => undefined,
     });
 
     if (!blob) throw new Error("PNG export failed");
@@ -559,12 +723,35 @@ async function renderCardBlob({ subject, format, lang, forPreview = false, scale
   }
 }
 
+function yieldToMain() {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, 0);
+  });
+}
+
 function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
+  link.href = url;
   link.download = filename;
+  link.rel = "noopener";
+  document.body.appendChild(link);
   link.click();
-  URL.revokeObjectURL(link.href);
+  link.remove();
+  // Revoke too early and Chrome drops large ZIP downloads as "Removed".
+  const revokeMs = Math.max(60_000, Math.ceil(blob.size / 512_000) * 5000);
+  window.setTimeout(() => URL.revokeObjectURL(url), revokeMs);
+}
+
+async function zipToBlob(zip, total) {
+  setStatus(`Compressing ${total} PNGs into ZIP… (large packs can take a minute)`);
+  setExportBusy(true, { indeterminate: true });
+  await yieldToMain();
+  return zip.generateAsync({
+    type: "blob",
+    compression: "DEFLATE",
+    compressionOptions: { level: 6 },
+  });
 }
 
 async function exportPng({ batch = false } = {}) {
@@ -595,7 +782,7 @@ async function exportPng({ batch = false } = {}) {
     setStatus(`PNG downloaded (${scale}× · ${outW}×${outH}).`);
   } catch (err) {
     console.error(err);
-    setStatus(`Export failed: ${err.message}`, true);
+    setStatus(`Export failed: ${exportErrorMessage(err)}`, true);
   } finally {
     exportRoot.innerHTML = "";
     setExportBusy(false);
@@ -613,10 +800,38 @@ async function exportZipPack(formats) {
   }
   if (exportBusy) return;
 
-  const subjects = getSubjects();
-  const byMentor = isMentorMode() && getMentorZipLayout() === "mentor";
-  const total = formats.length * subjects.length * LANGS.length;
+  if (isMentorMode()) {
+    return exportMentorZipPack(formats);
+  }
+
+  return exportSponsorZipPack(formats);
+}
+
+async function exportSponsorZipPack(formats, { subjects, usePreviewOverrides = false } = {}) {
+  if (typeof htmlToImage === "undefined") {
+    setStatus("Export library not loaded. Check your connection.", true);
+    return;
+  }
+  if (typeof JSZip === "undefined") {
+    setStatus("ZIP library not loaded. Check your connection.", true);
+    return;
+  }
+  if (exportBusy) return;
+
+  const sponsors = sponsorZipSubjects(subjects);
+  const sponsorFormats = [...new Set(formats.filter((format) => SPONSOR_FORMATS.has(format)))];
+  if (sponsorFormats.length === 0) {
+    setStatus("No sponsor formats selected.", true);
+    return;
+  }
+  if (sponsors.length === 0) {
+    setStatus("No sponsors to export.", true);
+    return;
+  }
+
+  const total = sponsorFormats.length * sponsors.length * LANGS.length;
   let done = 0;
+  const singleSponsor = sponsors.length === 1 ? sponsors[0] : null;
 
   setExportBusy(true, { done: 0, total });
   setStatus(`Building ZIP… 0 / ${total}`);
@@ -626,71 +841,160 @@ async function exportZipPack(formats) {
 
     const zip = new JSZip();
 
-    if (byMentor) {
-      const usedNames = new Set();
+    for (const subject of sponsors) {
+      const sponsorFolder = zip.folder(subject.id);
 
-      for (const subject of subjects) {
-        const mentorFolder = zip.folder(mentorZipFolderName(subject, usedNames));
+      for (const format of sponsorFormats) {
+        for (const lang of LANGS) {
+          const usePreview =
+            usePreviewOverrides && subject.id === getCurrent()?.id;
+          const blob = await renderCardBlob({
+            subject,
+            format,
+            lang,
+            forPreview: usePreview,
+          });
+          sponsorFolder.file(sponsorZipFilename(format, lang), blob);
 
-        for (const format of formats) {
-          const formatFolder = mentorFolder.folder(FORMAT_FOLDERS[format]);
-
-          for (const lang of LANGS) {
-            const blob = await renderCardBlob({ subject, format, lang });
-            const filename = pngFilename(subject, format, lang);
-            addPngToLangFolders(formatFolder, filename, blob, lang);
-
-            done += 1;
-            setExportBusy(true, { done, total });
-            setStatus(`Building ZIP… ${done} / ${total}`);
-          }
-        }
-      }
-    } else {
-      for (const format of formats) {
-        const formatFolder = zip.folder(FORMAT_FOLDERS[format]);
-
-        for (const subject of subjects) {
-          for (const lang of LANGS) {
-            const blob = await renderCardBlob({ subject, format, lang });
-            const filename = pngFilename(subject, format, lang);
-            addPngToLangFolders(formatFolder, filename, blob, lang);
-
-            done += 1;
-            setExportBusy(true, { done, total });
-            setStatus(`Building ZIP… ${done} / ${total}`);
-          }
+          done += 1;
+          setExportBusy(true, { done, total });
+          setStatus(`Building ZIP… ${done} / ${total}`);
+          if (done % 5 === 0) await yieldToMain();
         }
       }
     }
 
-    const zipBlob = await zip.generateAsync({ type: "blob" });
+    const zipBlob = await zipToBlob(zip, total);
     const stamp = new Date().toISOString().slice(0, 10);
-    const zipName = byMentor
-      ? formats.length === 1
-        ? `buildathon-sv-mentors-${FORMAT_FOLDERS[formats[0]]}-${stamp}.zip`
-        : `buildathon-sv-mentors-by-name-${stamp}.zip`
-      : formats.length === 1
-        ? isMentorMode()
-          ? `buildathon-sv-mentors-${FORMAT_FOLDERS[formats[0]]}-${stamp}.zip`
-          : `buildathon-sv-${FORMAT_FOLDERS[formats[0]]}-${stamp}.zip`
-        : isMentorMode()
-          ? `buildathon-sv-mentors-${stamp}.zip`
-          : `buildathon-sv-social-${stamp}.zip`;
-
-    const layoutLabel = byMentor
-      ? `${subjects.length} mentor folder${subjects.length === 1 ? "" : "s"}`
-      : `${formats.length} format folder${formats.length > 1 ? "s" : ""}`;
+    const zipName = sponsorZipName(sponsorFormats, stamp, {
+      subjectId: singleSponsor?.id,
+    });
+    const layoutLabel =
+      sponsors.length === 1
+        ? `${singleSponsor.id}/`
+        : `${sponsors.length} sponsor folders`;
 
     downloadBlob(zipBlob, zipName);
     setStatus(`Done — ${zipName} (${total} PNGs · ${layoutLabel}).`);
   } catch (err) {
     console.error(err);
-    setStatus(`ZIP export failed: ${err.message}`, true);
+    const msg = exportErrorMessage(err);
+    const hint =
+      total > 80
+        ? " Try one format at a time, or run node scripts/export-pngs.mjs."
+        : "";
+    setStatus(`ZIP export failed: ${msg}${hint}`, true);
   } finally {
     exportRoot.innerHTML = "";
     setExportBusy(false);
   }
+}
+
+async function exportMentorZipPack(formats, { subjects, usePreviewOverrides = false } = {}) {
+  if (typeof htmlToImage === "undefined") {
+    setStatus("Export library not loaded. Check your connection.", true);
+    return;
+  }
+  if (typeof JSZip === "undefined") {
+    setStatus("ZIP library not loaded. Check your connection.", true);
+    return;
+  }
+  if (exportBusy) return;
+
+  const mentors = subjects ?? getSubjects();
+  const mentorFormats = [...new Set(formats.filter((format) => MENTOR_FORMATS.has(format)))];
+  if (mentorFormats.length === 0) {
+    setStatus("No mentor formats selected.", true);
+    return;
+  }
+  if (mentors.length === 0) {
+    setStatus("No mentors to export.", true);
+    return;
+  }
+
+  const total = mentorFormats.length * mentors.length;
+  let done = 0;
+  const singleMentor = mentors.length === 1 ? mentors[0] : null;
+
+  setExportBusy(true, { done: 0, total });
+  setStatus(`Building ZIP… 0 / ${total}`);
+
+  try {
+    await document.fonts.ready;
+
+    const zip = new JSZip();
+
+    for (const subject of mentors) {
+      const mentorFolder = zip.folder(subject.id);
+
+      for (const format of mentorFormats) {
+        const usePreview =
+          usePreviewOverrides && subject.id === getCurrent()?.id;
+        const blob = await renderCardBlob({
+          subject,
+          format,
+          lang: MENTOR_ZIP_LANG,
+          forPreview: usePreview,
+        });
+        mentorFolder.file(mentorZipFilename(format), blob);
+
+        done += 1;
+        setExportBusy(true, { done, total });
+        setStatus(`Building ZIP… ${done} / ${total}`);
+        if (done % 5 === 0) await yieldToMain();
+      }
+    }
+
+    const zipBlob = await zipToBlob(zip, total);
+    const stamp = new Date().toISOString().slice(0, 10);
+    const zipName = mentorZipName(mentorFormats, stamp, {
+      subjectId: singleMentor?.id,
+    });
+    const layoutLabel =
+      mentors.length === 1
+        ? `${singleMentor.id}/`
+        : `${mentors.length} mentor folders`;
+
+    downloadBlob(zipBlob, zipName);
+    setStatus(`Done — ${zipName} (${total} PNGs · ${layoutLabel}).`);
+  } catch (err) {
+    console.error(err);
+    setStatus(`ZIP export failed: ${exportErrorMessage(err)}`, true);
+  } finally {
+    exportRoot.innerHTML = "";
+    setExportBusy(false);
+  }
+}
+
+async function exportCurrentMentorZip() {
+  if (!isMentorMode()) return;
+  const mentor = getCurrent();
+  if (!mentor?.id) {
+    setStatus("Select a mentor first.", true);
+    return;
+  }
+  return exportMentorZipPack(["story", "linkedin"], {
+    subjects: [mentor],
+    usePreviewOverrides: true,
+  });
+}
+
+async function exportCurrentSponsorZip() {
+  if (isMentorMode()) return;
+  const sponsor = getCurrent();
+  if (!sponsor?.id) {
+    setStatus("Select a sponsor first.", true);
+    return;
+  }
+  if (sponsor.isAll) {
+    return exportSponsorZipPack(SPONSOR_ZIP_FORMATS, {
+      usePreviewOverrides: true,
+    });
+  }
+  return exportSponsorZipPack(SPONSOR_ZIP_FORMATS, {
+    subjects: [sponsor],
+    usePreviewOverrides: true,
+  });
 }
 
 function selectFormatTab(tab) {
@@ -705,13 +1009,14 @@ function selectFormatTab(tab) {
 }
 
 function initFormatTabs() {
-  const tabs = [...formatTabs];
-
-  tabs.forEach((tab) => {
+  formatTabs.forEach((tab) => {
     tab.addEventListener("click", () => selectFormatTab(tab));
 
     tab.addEventListener("keydown", (e) => {
+      const tabs = visibleFormatTabs();
       const idx = tabs.indexOf(tab);
+      if (idx === -1) return;
+
       let next = -1;
 
       if (e.key === "ArrowRight") next = (idx + 1) % tabs.length;
@@ -889,6 +1194,7 @@ function initCardMode() {
   if (stored === "mentors" || stored === "sponsors") {
     cardMode = stored;
   }
+  syncCardModeAttribute();
   modeRadios.forEach((radio) => {
     radio.checked = radio.value === cardMode;
     radio.addEventListener("change", () => {
@@ -898,16 +1204,7 @@ function initCardMode() {
   updateModeUi();
 }
 
-function initMentorZipLayout() {
-  if (!mentorZipLayoutSelect) return;
-  const storedLayout = localStorage.getItem(MENTOR_ZIP_LAYOUT_STORAGE_KEY);
-  if (storedLayout === "mentor" || storedLayout === "format") {
-    mentorZipLayoutSelect.value = storedLayout;
-  }
-}
-
 function init() {
-  initMentorZipLayout();
   initCardMode();
   populateSponsors();
   updateSponsorCount();
@@ -931,16 +1228,15 @@ function init() {
   renderPreview();
 
   sponsorSelect.addEventListener("change", () => {
-    if (isMentorMode()) syncMentorControlsToCurrent();
+    if (isMentorMode()) {
+      syncMentorControlsToCurrent();
+    }
+    updateExportButtonsForMode();
     renderPreview();
   });
   mentorDesignSelect?.addEventListener("change", () => {
     localStorage.setItem(MENTOR_DESIGN_STORAGE_KEY, getMentorDesign());
     renderPreview();
-  });
-  mentorZipLayoutSelect?.addEventListener("change", () => {
-    localStorage.setItem(MENTOR_ZIP_LAYOUT_STORAGE_KEY, getMentorZipLayout());
-    updateModeUi();
   });
   mentorPhotoSelect?.addEventListener("change", onMentorPhotoChanged);
   mentorVoiceSelect?.addEventListener("change", renderPreview);
@@ -956,6 +1252,8 @@ function init() {
   window.addEventListener("resize", scalePreview);
 
   $("#export-one").addEventListener("click", () => exportPng({ batch: false }));
+  exportCurrentMentorBtn?.addEventListener("click", () => exportCurrentMentorZip());
+  exportCurrentSponsorBtn?.addEventListener("click", () => exportCurrentSponsorZip());
   $("#export-all").addEventListener("click", () => exportPng({ batch: true }));
 }
 
@@ -978,7 +1276,7 @@ async function boot() {
     await loadMentors();
   } catch (err) {
     console.error(err);
-    setStatus(`Mentor data error: ${err.message}`, true);
+    setStatus(`Mentor data error: ${exportErrorMessage(err)}`, true);
   }
   init();
 }

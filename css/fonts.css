@@ -1,0 +1,11 @@
+/* Chakra Petch Bold — self-hosted fallback when Google Fonts CDN unavailable. */
+
+@font-face {
+  font-family: "Chakra Petch";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    url("../fonts/chakra-petch-700-latin.woff2") format("woff2"),
+    url("../fonts/chakra-petch-700-latin-ext.woff2") format("woff2");
+}

@@ -1,6 +1,7 @@
 /* Sponsor thank-you cards — Cursor Buildathon El Salvador.
    Purpose: thank a sponsor of the 24h hackathon. Hierarchy: SPONSOR LOGO first,
-   El Salvador anchored by the halftone Divino Salvador del Mundo landmark. */
+   El Salvador anchored by the halftone Divino Salvador del Mundo landmark.
+   Typography: Chakra Petch Bold (700) on all card text. */
 
 .social-card {
   position: relative;
@@ -9,7 +10,8 @@
   overflow: hidden;
   background: var(--bg);
   color: var(--fg);
-  font-family: var(--font-display);
+  font-family: var(--card-display);
+  font-weight: 700;
   isolation: isolate;
 }
 
@@ -106,18 +108,18 @@
 }
 
 .social-card__brand {
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: var(--brand-size);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(245, 240, 232, 0.72);
 }
 
 .social-card__top-place {
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: var(--brand-size);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--accent);
@@ -137,9 +139,9 @@
   display: flex;
   align-items: center;
   gap: 0.7em;
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: var(--eyebrow-size);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--accent);
@@ -155,9 +157,9 @@
   margin-top: var(--role-gap);
   align-self: flex-start;
   padding: var(--role-pad);
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: var(--role-size);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--fg);
@@ -191,17 +193,18 @@
 
 .social-card__name {
   margin-top: var(--name-gap);
+  font-family: var(--card-display);
   font-size: var(--name-size);
   font-weight: 700;
-  line-height: 0.95;
-  letter-spacing: -0.01em;
+  line-height: 0.86;
+  letter-spacing: -0.035em;
   color: var(--fg);
 }
 
 .social-card__context {
   margin-top: var(--context-gap);
   max-width: var(--context-max);
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: var(--context-size);
   line-height: 1.5;
   letter-spacing: 0.02em;
@@ -215,9 +218,9 @@
   align-items: center;
   gap: 0.6em;
   margin-top: var(--meta-top);
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: var(--meta-size);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(245, 240, 232, 0.82);
@@ -239,9 +242,9 @@
 }
 
 .social-card__foot-label {
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: var(--foot-size);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(245, 240, 232, 0.5);
@@ -277,6 +280,24 @@
   gap: 0;
 }
 
+/* Full-bleed dark scrim so sponsor logos stay legible over the bright wave. */
+.social-card__foot--mentor::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--pad-x) * -1);
+  right: calc(var(--pad-x) * -1);
+  bottom: calc(var(--pad-bottom, var(--pad-y)) * -1);
+  top: calc(var(--foot-pad) * -1 - 64px);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(8, 8, 8, 0.82) 46%,
+    rgba(8, 8, 8, 0.97) 100%
+  );
+  z-index: -1;
+  pointer-events: none;
+}
+
 .social-card__foot--mentor .social-card__foot-sponsor {
   filter: grayscale(1) drop-shadow(0 2px 8px rgba(8, 8, 8, 0.85));
 }
@@ -291,9 +312,9 @@
 }
 
 .social-card__foot-sponsors-label {
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: calc(var(--foot-size) * 0.92);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(245, 240, 232, 0.42);
@@ -457,9 +478,9 @@
 .social-card__pub-badge {
   display: inline-block;
   padding: 10px 16px;
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--bg);
@@ -469,6 +490,7 @@
 .social-card__pub-statement {
   margin-top: 34px;
   max-width: 18ch;
+  font-family: var(--card-display);
   font-size: 66px;
   font-weight: 700;
   line-height: 0.98;
@@ -484,7 +506,7 @@
 .social-card__pub-context {
   margin-top: 26px;
   max-width: 40ch;
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: 17px;
   line-height: 1.55;
   letter-spacing: 0.01em;
@@ -751,6 +773,7 @@
   inset: 0;
   align-items: center;
   justify-content: center;
+  font-family: var(--card-display);
   font-size: calc(var(--portrait-size, 280px) * 0.28);
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -768,9 +791,9 @@
 
 .social-card__mentor-role {
   margin-top: 0.35em;
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: calc(var(--name-size) * 0.38);
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
@@ -778,7 +801,7 @@
 
 .social-card__company {
   margin-top: 0.45em;
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: calc(var(--context-size) * 0.95);
   letter-spacing: 0.04em;
   color: rgba(245, 240, 232, 0.72);
@@ -786,7 +809,7 @@
 
 .social-card__handle {
   margin-top: 0.25em;
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: calc(var(--context-size) * 0.88);
   letter-spacing: 0.02em;
   color: rgba(245, 240, 232, 0.5);
@@ -820,20 +843,23 @@
 }
 
 .social-card__mpub-name {
+  font-family: var(--card-display);
   font-size: 72px;
   font-weight: 700;
-  line-height: 0.95;
-  letter-spacing: -0.02em;
+  line-height: 0.86;
+  letter-spacing: -0.035em;
   color: var(--fg);
   text-shadow: 0 4px 30px rgba(8, 8, 8, 0.85);
 }
 
 .social-card__mpub-cred {
   margin-top: 14px;
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: 26px;
+  font-weight: 700;
   line-height: 1.35;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .social-card__mpub-title {
@@ -846,7 +872,7 @@
 
 .social-card__mpub-company {
   color: var(--accent);
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .social-card__mpub-photo {
@@ -867,7 +893,8 @@
   height: 100%;
   object-fit: contain;
   object-position: right bottom;
-  filter: url(#mentor-print) drop-shadow(-10px 18px 44px rgba(0, 0, 0, 0.55));
+  filter: grayscale(1) contrast(1.08) brightness(1.05)
+    drop-shadow(-10px 18px 44px rgba(0, 0, 0, 0.55));
 }
 
 .social-card__mpub-photo-halftone {
@@ -890,7 +917,7 @@
 }
 
 .social-card--mentor .social-card__portrait-img {
-  filter: url(#mentor-print);
+  filter: grayscale(1) contrast(1.08) brightness(1.05);
 }
 
 .social-card__print-defs {
@@ -987,19 +1014,59 @@
 
 .social-card__wall-title {
   margin-top: var(--role-gap);
+  font-family: var(--card-display);
   font-size: var(--wall-title-size);
   font-weight: 700;
-  line-height: 1;
+  line-height: 1.12;
   letter-spacing: -0.01em;
-  max-width: 22ch;
+  max-width: none;
   color: var(--fg);
 }
 
 .social-card__wall-context {
   margin-top: var(--context-gap);
+  line-height: 1.45;
+  clear: both;
 }
 
-.social-card__wall-lockup {
+/* All-sponsors wall — keep chrome on one line; avoid export text collisions. */
+.social-card--all .social-card__top--wall {
+  gap: 20px;
+  align-items: center;
+}
+
+.social-card--all .social-card__brand--wall {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  letter-spacing: 0.1em;
+  font-size: var(--wall-top-brand-size, var(--brand-size));
+}
+
+.social-card--all .social-card__top-place {
+  flex-shrink: 0;
+  white-space: nowrap;
+  letter-spacing: 0.1em;
+  font-size: var(--wall-top-brand-size, var(--brand-size));
+}
+
+.social-card--all .social-card__meta {
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  max-width: 100%;
+}
+
+.social-card--all .social-card__wall-context {
+  max-width: var(--wall-context-max, 40ch);
+}
+
+.social-card--all .social-card__wall-title,
+.social-card--all .social-card__wall-context {
+  display: block;
+  width: 100%;
+}
+
+.social-card--all .social-card__wall-lockup {
   flex: 1;
   width: 100%;
   min-height: 0;
@@ -1059,6 +1126,7 @@
 
 /* Story — tall canvas. */
 .social-card[data-sponsor="all"][data-format="story"] {
+  --wall-top-brand-size: 17px;
   --main-top: 0;
   --role-gap: 18px;
   --context-gap: 14px;
@@ -1087,15 +1155,16 @@
 
 .social-card[data-sponsor="all"][data-format="story"] .social-card__wall-title {
   align-self: center;
-  max-width: 16ch;
+  max-width: 20ch;
   text-align: center;
-  line-height: 1.02;
+  line-height: 1.08;
 }
 
 .social-card[data-sponsor="all"][data-format="story"] .social-card__wall-context {
   align-self: center;
-  max-width: 32ch;
+  max-width: 34ch;
   text-align: center;
+  margin-top: calc(var(--context-gap) + 6px);
 }
 
 .social-card[data-sponsor="all"][data-format="story"] .social-card__wall-lockup {
@@ -1112,6 +1181,8 @@
 
 /* Post — square. */
 .social-card[data-sponsor="all"][data-format="post"] {
+  --wall-top-brand-size: 12px;
+  --wall-context-max: 34ch;
   --wall-title-size: 38px;
   --wall-gap: 20px;
   --wall-tier-gap: 12px;
@@ -1128,9 +1199,11 @@
 /* LinkedIn / X — square publication: slightly larger title. */
 .social-card[data-sponsor="all"][data-format="linkedin"],
 .social-card[data-sponsor="all"][data-format="x"] {
+  --wall-top-brand-size: 13px;
+  --wall-context-max: 36ch;
   --main-top: 24px;
   --role-gap: 18px;
-  --context-gap: 12px;
+  --context-gap: 16px;
   --wall-title-size: 42px;
   --wall-gap: 18px;
   --wall-tier-gap: 11px;
@@ -1144,8 +1217,19 @@
   --wall-divider-size: 10px;
 }
 
+.social-card[data-sponsor="all"][data-format="linkedin"] .social-card__wall-context,
+.social-card[data-sponsor="all"][data-format="x"] .social-card__wall-context {
+  max-width: 36ch;
+  margin-top: calc(var(--context-gap) + 4px);
+}
+
+.social-card[data-sponsor="all"][data-format="post"] .social-card__wall-context {
+  margin-top: calc(var(--context-gap) + 4px);
+}
+
 /* Banner — wide & short. */
 .social-card[data-sponsor="all"][data-format="banner"] {
+  --wall-top-brand-size: 10px;
   --wall-title-size: 30px;
   --wall-gap: 10px;
   --wall-tier-gap: 7px;
@@ -1161,6 +1245,7 @@
 
 /* LinkedIn banner — ultra-wide. */
 .social-card[data-sponsor="all"][data-format="linkedin-banner"] {
+  --wall-top-brand-size: 9px;
   --wall-title-size: 26px;
   --wall-gap: 8px;
   --wall-tier-gap: 5px;
@@ -1226,6 +1311,7 @@
 
 .social-card--film .social-card__film-name {
   margin-top: 20px;
+  font-family: var(--card-display);
   font-size: 56px;
   font-weight: 700;
   line-height: 0.95;
@@ -1241,7 +1327,7 @@
 
 .social-card--film .social-card__film-handle {
   margin-top: 10px;
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: 18px;
   letter-spacing: 0.02em;
   color: rgba(245, 240, 232, 0.5);
@@ -1252,15 +1338,11 @@
   flex: 0 0 auto;
   width: 460px;
   max-width: 100%;
-  padding: 18px;
-  /* Black frame, tinted toward the page background — never pure black. */
-  background: linear-gradient(168deg, #131210 0%, #0b0b0a 100%);
-  box-shadow:
-    0 30px 64px rgba(0, 0, 0, 0.66),
-    0 0 0 1px rgba(245, 240, 232, 0.1),
-    inset 0 1px 0 rgba(245, 240, 232, 0.08);
-  transform: rotate(-1.4deg);
-  transform-origin: 50% 50%;
+  padding: 0;
+  /* No hard frame: the photo floats, held only by a soft diffused shadow
+     that follows the feathered edges below. */
+  filter: drop-shadow(0 26px 58px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 6px 18px rgba(0, 0, 0, 0.45));
 }
 
 .social-card--film .social-card__film-window {
@@ -1269,6 +1351,15 @@
   aspect-ratio: 3 / 2;
   overflow: hidden;
   background: #15110d;
+  /* Feather all four edges so the photo dissolves into the card. */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 7%, #000 93%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%),
+    linear-gradient(to bottom, transparent 0, #000 7%, #000 93%, transparent 100%);
+  mask-composite: intersect;
 }
 
 .social-card--film .social-card__film-img {
@@ -1276,7 +1367,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center 35%;
-  filter: url(#mentor-print);
+  filter: grayscale(1) contrast(1.08) brightness(1.05);
 }
 
 .social-card--film .social-card__film-fallback {
@@ -1285,7 +1376,7 @@
   display: none;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-display);
+  font-family: var(--card-display);
   font-size: 120px;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -1306,9 +1397,9 @@
   top: 14px;
   right: 14px;
   padding: 5px 11px;
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #f4ede1;
@@ -1335,9 +1426,9 @@
 
 .social-card--film .social-card__film-caption-text {
   min-width: 0;
-  font-family: var(--font-mono);
+  font-family: var(--card-display);
   font-size: 19px;
-  font-weight: 500;
+  font-weight: 700;
   letter-spacing: 0.01em;
   color: rgba(245, 240, 232, 0.82);
   white-space: nowrap;
@@ -1366,12 +1457,251 @@
    left-heavy mentor publication gradient — must come after it in source). */
 .social-card--film[data-format="linkedin"] .social-card__landmark img,
 .social-card--film[data-format="x"] .social-card__landmark img {
-  opacity: 0.32;
-  object-position: center 62%;
+  opacity: 0.52;
+  object-position: center 60%;
 }
 
 .social-card--film[data-format="linkedin"] .social-card__landmark-fade,
 .social-card--film[data-format="x"] .social-card__landmark-fade {
   background:
-    linear-gradient(180deg, rgba(8, 8, 8, 0.9) 0%, rgba(8, 8, 8, 0.42) 34%, rgba(8, 8, 8, 0.5) 66%, rgba(8, 8, 8, 0.94) 100%);
+    radial-gradient(120% 80% at 78% 64%, rgba(255, 75, 0, 0.16) 0%, transparent 58%),
+    linear-gradient(180deg, rgba(8, 8, 8, 0.92) 0%, rgba(8, 8, 8, 0.34) 32%, rgba(8, 8, 8, 0.32) 64%, rgba(8, 8, 8, 0.92) 100%);
+}
+
+/* ── Mentor story (9:16): clean editorial cover ──
+   One focal point: a full-bleed B&W portrait hero that dissolves into solid
+   near-black. Magazine name lockup sits over the foot of the photo. Below, a
+   calm structured block on solid black carries the event meta, a legible
+   two-row sponsor grid, and a small powered-by credit. No muddy wave. */
+.social-card--mentor[data-format="story"] {
+  --pad-top: 232px;
+  --pad-bottom: 220px;
+  --top-pad: 22px;
+  --host-mark-h: 30px;
+  --brand-size: 18px;
+}
+
+/* Kill the wave: the portrait is the hero and melts into pure background.
+   A single faint warm glow keeps brand warmth without clutter. */
+.social-card--mentor[data-format="story"] .social-card__landmark {
+  display: none;
+}
+.social-card--mentor[data-format="story"] .social-card__atmos-grid {
+  mask-image: radial-gradient(ellipse 86% 50% at 50% 34%, #000 6%, transparent 72%);
+}
+.social-card--mentor[data-format="story"] .social-card__atmos-glow {
+  background:
+    radial-gradient(ellipse 78% 40% at 50% 30%, rgba(255, 75, 0, 0.13) 0%, transparent 70%);
+}
+
+.social-card--mentor[data-format="story"] .social-card__top {
+  border-bottom-color: rgba(245, 240, 232, 0.12);
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory {
+  position: relative;
+  z-index: 3;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 0;
+  gap: 14px;
+  padding-top: 8px;
+}
+
+/* ── Hero portrait ── */
+.social-card--mentor[data-format="story"] .social-card__mstory-hero {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 760px;
+  margin: 0 calc(var(--pad-x) * -1);
+  overflow: hidden;
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  filter: grayscale(1) contrast(1.06) brightness(1.05);
+  /* Emerge from the dark masthead, dissolve into the black foot: one image. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 10%, #000 74%, transparent 97%);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 10%, #000 74%, transparent 97%);
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory-fallback {
+  position: absolute;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--card-display);
+  font-size: 300px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #f0e6d6;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 75, 0, 0.3) 0%, transparent 62%),
+    #15110d;
+}
+.social-card--mentor[data-format="story"] .social-card__mstory-fallback--solo,
+.social-card--mentor[data-format="story"]
+  .social-card__mstory-hero:not(:has(.social-card__mstory-img))
+  .social-card__mstory-fallback {
+  display: flex;
+}
+
+/* Scrim under the name lockup keeps it legible over the photo. */
+.social-card--mentor[data-format="story"] .social-card__mstory-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 44%,
+    rgba(8, 8, 8, 0.28) 62%,
+    rgba(8, 8, 8, 0.88) 100%
+  );
+}
+
+/* ── Name lockup ── */
+.social-card--mentor[data-format="story"] .social-card__mstory-id {
+  position: absolute;
+  left: var(--pad-x);
+  right: var(--pad-x);
+  bottom: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 22px;
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory-badge {
+  display: inline-block;
+  padding: 9px 16px;
+  font-family: var(--card-display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--accent);
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory-name {
+  font-family: var(--card-display);
+  font-size: 108px;
+  font-weight: 700;
+  line-height: 0.86;
+  letter-spacing: -0.035em;
+  color: var(--fg);
+  text-shadow: 0 6px 40px rgba(8, 8, 8, 0.85);
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory-cred {
+  font-family: var(--card-display);
+  font-size: 31px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory-cred-title {
+  color: rgba(245, 240, 232, 0.92);
+}
+.social-card--mentor[data-format="story"] .social-card__mstory-cred-at {
+  color: rgba(245, 240, 232, 0.42);
+}
+.social-card--mentor[data-format="story"] .social-card__mstory-cred-company {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+/* ── Foot info block on solid black ── */
+.social-card--mentor[data-format="story"] .social-card__mstory-info {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.62em;
+  font-family: var(--card-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.82);
+}
+.social-card--mentor[data-format="story"] .social-card__mstory-meta-sep {
+  color: rgba(245, 240, 232, 0.34);
+}
+.social-card--mentor[data-format="story"] .social-card__mstory-meta-hot {
+  color: var(--accent);
+}
+
+/* ── Sponsor grid: open layout on solid black, legible logos ── */
+.social-card--mentor[data-format="story"] .social-card__mstory-sponsors {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory-sponsors-label {
+  font-family: var(--card-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.46);
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory-sponsors-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  row-gap: 22px;
+  column-gap: 32px;
+}
+
+.social-card--mentor[data-format="story"] .social-card__mstory-sponsor {
+  flex: 0 0 auto;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: grayscale(1) brightness(1.06);
+  opacity: 0.92;
+}
+
+/* ── Powered-by credit ── */
+.social-card--mentor[data-format="story"] .social-card__mstory-powered {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.social-card--mentor[data-format="story"] .social-card__mstory-powered-label {
+  font-family: var(--card-display);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.42);
+}
+.social-card--mentor[data-format="story"] .social-card__mstory-powered-logo {
+  width: 116px;
+  height: 26px;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: 0.82;
 }
